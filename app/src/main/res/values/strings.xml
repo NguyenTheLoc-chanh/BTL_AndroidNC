@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">BTL_AndroidNC</string>
+        <string name="page1">Tiếp</string>
+        <string name="page2">Đăng nhập bằng số điện thoại</string>
+</resources>
