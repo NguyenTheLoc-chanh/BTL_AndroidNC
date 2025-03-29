@@ -1,9 +1,11 @@
 package com.example.btl_androidnc;
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,6 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 public class FragmentLogin extends BottomSheetDialogFragment {
+    private Button btnLogin;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -21,12 +24,22 @@ public class FragmentLogin extends BottomSheetDialogFragment {
 
         TextView cancelButton = view.findViewById(R.id.txtCancel);
         ImageView imgNextLeft = view.findViewById(R.id.imgNextLeft);
+
+        btnLogin = view.findViewById(R.id.btn_login);
         if (cancelButton != null) {
             cancelButton.setOnClickListener(v -> dismiss());
         }
         if(imgNextLeft != null){
             imgNextLeft.setOnClickListener(v -> dismiss());
         }
+        btnLogin.setOnClickListener(v -> {
+            // Chuyển sang HomeActivity
+            Intent intent = new Intent(getActivity(), HomeActivity.class);
+            startActivity(intent);
+
+            // Đóng BottomSheet sau khi đăng nhập
+            dismiss();
+        });
         return view;
     }
     @Override

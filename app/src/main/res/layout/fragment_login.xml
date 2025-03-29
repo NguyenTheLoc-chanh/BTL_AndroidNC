@@ -55,7 +55,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Vui lòng đăng nhập số điện thoại để sử dụng các dịch vụ của mGreen"
+        android:text="Vui lòng đăng nhập bằng tài khoản để sử dụng các dịch vụ của HRecycle"
         android:gravity="center"
         android:textSize="16sp"
         android:padding="16dp" />
@@ -68,9 +68,20 @@
         android:hint="Số điện thoại"
         android:minHeight="48dp"
         android:padding="10dp"
+        tools:ignore="HardcodedText"
+        android:layout_marginBottom="20dp"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:drawableLeft="@drawable/phone_call"
+        android:hint="Mật khẩu"
+        android:minHeight="48dp"
+        android:padding="10dp"
         tools:ignore="HardcodedText" />
 
     <Button
+        android:id="@+id/btn_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Đăng nhập"

@@ -8,6 +8,7 @@ import java.util.List;
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
     private final List<IntroFragment> fragments;
+    private List<Integer> bannerImages;
 
     public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, List<IntroFragment> fragments) {
         super(fragmentActivity);

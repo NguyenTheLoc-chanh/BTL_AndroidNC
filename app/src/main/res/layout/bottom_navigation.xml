@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:background="@android:color/white"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:elevation="4dp">
+
+    <TextView
+        android:id="@+id/nav_tichdiem"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Tích điểm"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:drawableTop="@drawable/gift_card"
+        android:drawablePadding="4dp"/>
+
+
+    <TextView
+        android:id="@+id/nav_doiqua"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Đổi quà"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:drawableTop="@drawable/gift"
+        android:drawablePadding="4dp"
+        />
+
+    <!-- Logo ở giữa -->
+    <ImageView
+        android:id="@+id/nav_logo"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/ic_launcher_foreground"
+        android:background="@android:color/white"
+        android:elevation="6dp"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:id="@+id/nav_lichsu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Lịch sử"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:drawableTop="@drawable/history"
+        android:drawablePadding="4dp"/>
+
+    <TextView
+        android:id="@+id/nav_taikhoan"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Tài khoản"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:drawableTop="@drawable/account"
+        android:drawablePadding="4dp"/>
+</LinearLayout>
