@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "889378242993",
+    "project_id": "btlandroidnc-ebb2e",
+    "storage_bucket": "btlandroidnc-ebb2e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889378242993:android:085e85f78f41f62a5afd90",
+        "android_client_info": {
+          "package_name": "com.example.btl_androidnc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSCpyqo-0LPdNeFevazn4_oE3xm6hM0t0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

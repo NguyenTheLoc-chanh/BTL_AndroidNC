@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="6dp"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/rounded_item"
+        android:paddingBottom="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Người thu gom"
+            android:textColor="@android:color/white"
+            android:background="#4CAF50"
+            android:padding="6dp"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <ImageView
+            android:id="@+id/imgAvatar"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_launcher_foreground"
+            android:background="@android:color/darker_gray"
+            android:padding="4dp"
+            app:circleCrop="true"/>
+
+        <TextView
+            android:id="@+id/tvCollectorName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tổ hợp tác ve chai Hương Sơ 1"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_marginTop="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="20dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/phone_call"/>
+
+            <TextView
+                android:id="@+id/tvPhone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0772457126"
+                android:textSize="14sp"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvBirthYear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Năm sinh: 1970"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="20dp"/>
+
+        <TextView
+            android:layout_marginLeft="20dp"
+            android:id="@+id/tvWorkplace"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Địa chỉ: Tổ hợp tác ve chai Hương Sơ"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

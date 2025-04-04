@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +18,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator;
 
 import java.util.Arrays;
@@ -37,27 +42,35 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private TextView navDoiQua ;
     private TextView navLichSu;
     private TextView navTaiKhoan;
+    FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+    private TextView txtName, txtUserPoints;
+    private LinearLayout btnBooking;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-         navTichDiem = findViewById(R.id.nav_tichdiem);
-         navDoiQua = findViewById(R.id.nav_doiqua);
-         navLichSu = findViewById(R.id.nav_lichsu);
-         navTaiKhoan = findViewById(R.id.nav_taikhoan);
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        txtUserPoints = findViewById(R.id.txtUserPoints);
 
-        bannerViewPager = findViewById(R.id.bannerViewPager);
-        dotsIndicator = findViewById(R.id.dotsIndicatorhome);
-
-        drawerLayout = findViewById(R.id.drawerLayout);
-        menuIcon = findViewById(R.id.menuIcon);
-        navigationView = findViewById(R.id.navigationView);
+        AnhXa();
+        loadUserData();
 
         // Đặt sự kiện chung cho các mục
         setNavClickListener(navLichSu, HistoryActivity.class);
-//        setNavClickListener(navTaiKhoan, TaiKhoanActivity.class);
+        setNavClickListener(navTaiKhoan, ProfileActivity.class);
+//       setNavClickListener(navTaiKhoan, TaiKhoanActivity.class);
 
+        btnBooking.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this, BookingActivity.class);
+                startActivity(intent);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            }
+        });
         // Bắt sự kiện mở Navigation Drawer khi nhấn vào menuIcon
         menuIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,6 +105,50 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         handler.postDelayed(runnable, 3000);
     }
+    private void AnhXa() {
+        navTichDiem = findViewById(R.id.nav_tichdiem);
+        navDoiQua = findViewById(R.id.nav_doiqua);
+        navLichSu = findViewById(R.id.nav_lichsu);
+        navTaiKhoan = findViewById(R.id.nav_taikhoan);
+
+        bannerViewPager = findViewById(R.id.bannerViewPager);
+        dotsIndicator = findViewById(R.id.dotsIndicatorhome);
+
+        drawerLayout = findViewById(R.id.drawerLayout);
+        menuIcon = findViewById(R.id.menuIcon);
+        navigationView = findViewById(R.id.navigationView);
+
+        txtUserPoints = findViewById(R.id.txtUserPoints);
+        txtName = findViewById(R.id.txtName);
+
+        btnBooking = findViewById(R.id.btn_booking);
+    }
+    private void loadUserData() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+
+            db.collection("users").document(userId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String name = documentSnapshot.getString("name");
+                            String points = documentSnapshot.getString("point");
+
+                            if (points != null && name !=null) {
+                                txtUserPoints.setText("Điểm: " + points);
+                                txtName.setText(name);
+                            } else {
+                                txtUserPoints.setText("Điểm: 1");
+                                txtName.setText("Đang cập nhật...");
+                            }
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Firestore", "Lỗi khi lấy thông tin người dùng", e);
+                    });
+        }
+    }
 
     private void setNavClickListener(TextView textView, Class<?> destinationActivity) {
         textView.setOnClickListener(new View.OnClickListener() {
@@ -125,5 +182,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.closeDrawer(GravityCompat.START);
         return false;
     }
+
 }
 

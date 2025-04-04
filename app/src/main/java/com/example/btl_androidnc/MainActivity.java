@@ -27,9 +27,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Danh sách Fragment
         List<IntroFragment> fragmentList = new ArrayList<>();
-        fragmentList.add(IntroFragment.newInstance(R.drawable.ic_launcher_background));
-        fragmentList.add(IntroFragment.newInstance(R.drawable.ic_launcher_foreground));
-        fragmentList.add(IntroFragment.newInstance(R.drawable.ic_launcher_foreground));
+        fragmentList.add(IntroFragment.newInstance(R.drawable.banner1));
+        fragmentList.add(IntroFragment.newInstance(R.drawable.banner2));
+        fragmentList.add(IntroFragment.newInstance(R.drawable.banner3));
 
         // Adapter
         ViewPagerAdapter adapter = new ViewPagerAdapter(this, fragmentList);

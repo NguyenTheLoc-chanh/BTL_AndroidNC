@@ -7,4 +7,16 @@
     <string name="his_nav">Lịch sử</string>
     <string name="feedback_nav">Phản hồi</string>
     <string name="logout_nav">Đăng xuất</string>
+
+    <string name="selected_date">Ngày đã chọn: %s</string>
+    <string name="selected_time_slot">Khung giờ đã chọn: %s</string>
+    <string name="no_date_selected">Chưa chọn ngày</string>
+    <string name="no_time_slot_selected">Chưa chọn khung giờ</string>
+
+    <string name="select_scraps_title">Chọn loại phế liệu</string>
+    <string name="no_scraps_selected">Chưa chọn loại phế liệu nào</string>
+    <string name="selected_scraps">Đã chọn: %s</string>
+    <string name="paper">Giấy</string>
+    <string name="plastic">Nhựa</string>
+    <string name="metal">Sắt</string>
 </resources>

@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <!-- Thanh tiêu đề -->
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#4CAF50"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/ImgNext"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/left_arrow"
+            app:tint="@android:color/white" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Đặt lịch thu gom"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="10dp" />
+    </LinearLayout>
+
+    <!-- Nội dung chính - ScrollView để cuộn khi nội dung dài -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottomNav"
+        android:layout_below="@id/toolbar"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Phần giới thiệu -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="16dp">
+                <TextView
+                    android:id="@+id/txtName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mời bạn đặt lịch thu gom rác tái chế tại nhà"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:layout_marginLeft="8dp" />
+            </LinearLayout>
+
+            <!-- Đường kẻ ngăn cách -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:background="#BDBDBD"
+                android:layout_marginBottom="20dp"/>
+
+            <!-- Danh sách người thu gom -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Chọn người thu gom"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"/>
+            </LinearLayout>
+            <!-- Phần chọn ngày -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Chọn ngày thu gom"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <Button
+                    android:id="@+id/btnSelectDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="Nhấn để chọn ngày"
+                    android:backgroundTint="#4CAF50"
+                    android:textColor="@android:color/white"/>
+
+                <TextView
+                    android:id="@+id/tvSelectedDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Chưa chọn ngày"
+                    android:textSize="14sp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"/>
+            </LinearLayout>
+            <!-- Phần chọn giờ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Chọn khung giờ thu gom"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <Button
+                        android:id="@+id/btnTime1"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="4dp"
+                        android:text="8:00 - 10:00"
+                        android:backgroundTint="#FFCFD6CF"
+                        android:textColor="@android:color/white"/>
+
+                    <Button
+                        android:id="@+id/btnTime2"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:text="10:00 - 12:00"
+                        android:backgroundTint="#FFCFD6CF"
+                        android:textColor="@android:color/white"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    android:layout_marginTop="8dp">
+
+                    <Button
+                        android:id="@+id/btnTime3"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="4dp"
+                        android:text="13:00 - 15:00"
+                        android:backgroundTint="#FFCFD6CF"
+                        android:textColor="@android:color/white"/>
+
+                    <Button
+                        android:id="@+id/btnTime4"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:text="15:00 - 17:00"
+                        android:backgroundTint="#FFCFD6CF"
+                        android:textColor="@android:color/white"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvSelectedTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Chưa chọn khung giờ"
+                    android:textSize="14sp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"/>
+            </LinearLayout>
+            <!-- Thêm phần này sau phần chọn giờ và trước RecyclerView người thu gom -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Thông tin phế liệu"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <Button
+                    android:id="@+id/btnSelectScrapTypes"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="Chọn loại phế liệu"
+                    android:drawableRight="@drawable/ic_arrow_drop_down"
+                    android:textAlignment="textStart"
+                    android:gravity="start|center_vertical"/>
+
+                <TextView
+                    android:id="@+id/tvSelectedScraps"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Chưa chọn loại phế liệu nào"
+                    android:textColor="@android:color/darker_gray"/>
+
+                <!-- Hiển thị số lượng cho các loại đã chọn (sẽ ẩn/hiện động) -->
+                <LinearLayout
+                    android:id="@+id/containerPaper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_paper"
+                        android:layout_marginEnd="8dp"/>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Giấy"
+                        android:textSize="14sp"/>
+
+                    <EditText
+                        android:id="@+id/etPaper"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
+                        android:inputType="numberDecimal"
+                        android:hint="kg"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/containerPlastic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_plastic"
+                        android:layout_marginEnd="8dp"/>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Nhựa"
+                        android:textSize="14sp"/>
+
+                    <EditText
+                        android:id="@+id/etPlastic"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
+                        android:inputType="numberDecimal"
+                        android:hint="kg"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/containerMetal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_metal"
+                        android:layout_marginEnd="8dp"/>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Sắt"
+                        android:textSize="14sp"/>
+
+                    <EditText
+                        android:id="@+id/etMetal"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
+                        android:inputType="numberDecimal"
+                        android:hint="kg"/>
+                </LinearLayout>
+
+                <!-- Hình ảnh minh họa -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Hình ảnh minh họa"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnTakePhoto"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="4dp"
+                        android:text="Chụp ảnh"
+                        android:drawableLeft="@drawable/camera"/>
+
+                    <Button
+                        android:id="@+id/btnChoosePhoto"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:text="Chọn ảnh"
+                        android:drawableLeft="@drawable/ic_gallery"/>
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/ivScrapPhoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="8dp"
+                    android:scaleType="centerCrop"
+                    android:background="@android:color/darker_gray"
+                    android:src="@drawable/ic_placeholder"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Navigation - Luôn nằm dưới cùng -->
+    <include
+        android:id="@+id/bottomNav"
+        layout="@layout/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>

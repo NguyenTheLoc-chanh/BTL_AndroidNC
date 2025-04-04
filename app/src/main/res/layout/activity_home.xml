@@ -60,6 +60,7 @@
                             app:tint="#4CAF50" />
 
                         <TextView
+                            android:id="@+id/txtName"
                             android:layout_marginLeft="6dp"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -68,6 +69,15 @@
                             android:textSize="18sp"
                             android:textStyle="bold"
                             android:gravity="left" />
+                        <TextView
+                            android:id="@+id/txtUserPoints"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Điểm: 0"
+                            android:textSize="16sp"
+                            android:textColor="#4CAF50"
+                            android:layout_marginLeft="10dp"
+                            android:textStyle="bold"/>
 
                         <ImageView
                             android:layout_width="30dp"
@@ -125,6 +135,7 @@
 
                     <!-- Nút 2 -->
                     <LinearLayout
+                        android:id="@+id/btn_booking"
                         android:layout_marginHorizontal="10dp"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"

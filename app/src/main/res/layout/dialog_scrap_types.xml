@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Chọn loại phế liệu"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/cbPaper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Giấy"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <CheckBox
+            android:id="@+id/cbPlastic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nhựa"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <CheckBox
+            android:id="@+id/cbMetal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sắt"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Có thể thêm các loại phế liệu khác tại đây -->
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:text="Xác nhận"
+        android:backgroundTint="#4CAF50"
+        android:textColor="@android:color/white"/>
+</LinearLayout>
