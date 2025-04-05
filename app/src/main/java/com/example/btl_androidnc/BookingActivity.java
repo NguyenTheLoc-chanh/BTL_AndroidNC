@@ -1,11 +1,20 @@
 package com.example.btl_androidnc;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorManager;
+import android.hardware.SensorEventListener;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -15,20 +24,33 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BookingActivity extends AppCompatActivity {
+import javax.annotation.Nullable;
+
+public class BookingActivity extends AppCompatActivity implements SensorEventListener{
     // UI Components
     private RecyclerView recyclerView;
     private Button btnSelectDate;
@@ -45,8 +67,6 @@ public class BookingActivity extends AppCompatActivity {
     private Button btnTakePhoto, btnChoosePhoto;
     private ImageView ivScrapPhoto;
     private Uri photoUri;
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final int REQUEST_IMAGE_PICK = 2;
 
     // Adapter and Data
     private CollectorAdapter adapter;
@@ -59,6 +79,17 @@ public class BookingActivity extends AppCompatActivity {
     private String selectedDate = "";
     private String selectedTimeSlot = "";
 
+    // Chụp ảnh
+    //private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_IMAGE_PICK = 2;
+    private static final int REQUEST_IMAGE_CAPTURE = 2;
+    private static final int REQUEST_CAMERA_PERMISSION = 100;
+    private String currentPhotoPath;
+    // Cảm biến
+    private SensorManager sensorManager;
+    private Sensor lightSensor;
+    private float currentLightLevel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +99,54 @@ public class BookingActivity extends AppCompatActivity {
         setupRecyclerView();
         setupDatePicker();
         setupTimeSlots();
+        setupScrapSelection();
+        setupPhotoSelection();
         fetchCollectorsFromFirestore();
+
+        // Khởi tạo cảm biến ánh sáng
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        if (sensorManager != null) {
+            lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+            if (lightSensor == null) {
+                Toast.makeText(this, "Thiết bị không hỗ trợ cảm biến ánh sáng", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    // Cảm biến ánh sáng
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Đăng ký listener với kiểm tra null
+        if (sensorManager != null && lightSensor != null) {
+            sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Hủy đăng ký listener nếu sensorManager không null
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(this);
+        }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
+            currentLightLevel = event.values[0];
+
+            // Cảnh báo nếu ánh sáng yếu (chạy trên UI thread)
+            runOnUiThread(() -> {
+                if (currentLightLevel < 10) { // Giá trị ngưỡng có thể điều chỉnh
+                    Toast.makeText(this, "Môi trường quá tối, hãy bật đèn flash", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // Xử lý thay đổi độ chính xác nếu cần
     }
 
     private void initViews() {
@@ -86,6 +164,116 @@ public class BookingActivity extends AppCompatActivity {
         containerPaper = findViewById(R.id.containerPaper);
         containerPlastic = findViewById(R.id.containerPlastic);
         containerMetal = findViewById(R.id.containerMetal);
+
+        // Thêm các view liên quan đến ảnh
+        btnTakePhoto = findViewById(R.id.btnTakePhoto);
+        btnChoosePhoto = findViewById(R.id.btnChoosePhoto);
+        ivScrapPhoto = findViewById(R.id.ivScrapPhoto);
+        etPaper = findViewById(R.id.etPaper);
+        etPlastic = findViewById(R.id.etPlastic);
+        etMetal = findViewById(R.id.etMetal);
+    }
+
+    private void setupPhotoSelection() {
+        // Xử lý chọn ảnh từ thư viện
+        btnChoosePhoto.setOnClickListener(v -> {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        REQUEST_IMAGE_PICK);
+            } else {
+                openGallery();
+            }
+        });
+
+        // Xử lý chụp ảnh mới
+        btnTakePhoto.setOnClickListener(v -> {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_CAMERA_PERMISSION);
+            } else {
+                dispatchTakePictureIntent();
+            }
+        });
+    }
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        startActivityForResult(Intent.createChooser(intent, "Chọn ảnh"), REQUEST_IMAGE_PICK);
+    }
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                Toast.makeText(this, "Lỗi khi tạo file ảnh", Toast.LENGTH_SHORT).show();
+            }
+
+            if (photoFile != null) {
+                photoUri = FileProvider.getUriForFile(this,
+                        "com.your.package.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_IMAGE_PICK && data != null) {
+                photoUri = data.getData();
+                ivScrapPhoto.setImageURI(photoUri);
+            } else if (requestCode == REQUEST_IMAGE_CAPTURE) {
+                // Hiển thị ảnh vừa chụp
+                ivScrapPhoto.setImageURI(photoUri);
+
+                // Thêm ảnh vào MediaStore để hiển thị trong thư viện
+                galleryAddPic();
+            }
+        }
+    }
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        mediaScanIntent.setData(photoUri);
+        this.sendBroadcast(mediaScanIntent);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                dispatchTakePictureIntent();
+            } else {
+                Toast.makeText(this, "Cần cấp quyền camera để chụp ảnh", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == REQUEST_IMAGE_PICK) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openGallery();
+            }
+        }
     }
     private void setupScrapSelection() {
         btnSelectScrapTypes.setOnClickListener(v -> showScrapTypesDialog());
