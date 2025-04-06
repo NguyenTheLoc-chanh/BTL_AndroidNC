@@ -6,7 +6,8 @@ public class Collector {
     private String address;
     private String birthYear;
     private String imageUrl;
-
+    // Các thuộc tính hiện có
+    private boolean isSelected = false;
     public Collector() {
         // Firestore cần constructor rỗng
     }
@@ -37,6 +38,13 @@ public class Collector {
 
     public String getImageUrl() {
         return imageUrl;
+    }
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }
 

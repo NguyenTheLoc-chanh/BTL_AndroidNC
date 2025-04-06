@@ -16,11 +16,12 @@
         android:paddingBottom="20dp">
 
         <TextView
+            android:id="@+id/tvTitleCollector"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Người thu gom"
             android:textColor="@android:color/white"
-            android:background="#4CAF50"
+            android:background="@android:color/darker_gray"
             android:padding="6dp"
             android:textSize="16sp"
             android:gravity="center"

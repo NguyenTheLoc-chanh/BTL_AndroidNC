@@ -4,7 +4,10 @@ import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Sensor;
@@ -12,10 +15,12 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.hardware.SensorEventListener;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,13 +38,20 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -80,15 +92,23 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
     private String selectedTimeSlot = "";
 
     // Chụp ảnh
-    //private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_IMAGE_PICK = 2;
-    private static final int REQUEST_IMAGE_CAPTURE = 2;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private String currentPhotoPath;
+
     // Cảm biến
     private SensorManager sensorManager;
     private Sensor lightSensor;
     private float currentLightLevel;
+    // Trong phương thức initViews()
+    private Button btnConfirmBooking;
+
+    //Nav
+    private ImageView imgNextLeft;
+    private TextView navLichSu;
+    private TextView navTaiKhoan;
+    private ImageView navHome;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +123,18 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
         setupPhotoSelection();
         fetchCollectorsFromFirestore();
 
+        // Đặt sự kiện chung cho các mục
+        setNavClickListener(navLichSu, HistoryActivity.class);
+        setNavClickListener(navTaiKhoan, ProfileActivity.class);
+        setNavHomeClickListener(navHome, HomeActivity.class);
+
+        imgNextLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish(); // Quay về trang trước
+            }
+        });
+
         // Khởi tạo cảm biến ánh sáng
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         if (sensorManager != null) {
@@ -111,6 +143,22 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
                 Toast.makeText(this, "Thiết bị không hỗ trợ cảm biến ánh sáng", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+    private void setNavClickListener(TextView textView, Class<?> destinationActivity) {
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(BookingActivity.this, destinationActivity));
+            }
+        });
+    }
+    private void setNavHomeClickListener(ImageView textView, Class<?> destinationActivity) {
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(BookingActivity.this, destinationActivity));
+            }
+        });
     }
     // Cảm biến ánh sáng
     @Override
@@ -172,6 +220,16 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
         etPaper = findViewById(R.id.etPaper);
         etPlastic = findViewById(R.id.etPlastic);
         etMetal = findViewById(R.id.etMetal);
+        // Btn Xác nhận và Close
+        btnConfirmBooking = findViewById(R.id.btnConfirm);
+        btnConfirmBooking.setOnClickListener(v -> confirmBooking());
+
+        //Nav
+        imgNextLeft = findViewById(R.id.ImgNext);
+
+        navLichSu = findViewById(R.id.nav_lichsu);
+        navHome = findViewById(R.id.nav_logo);
+        navTaiKhoan = findViewById(R.id.nav_taikhoan);
     }
 
     private void setupPhotoSelection() {
@@ -197,29 +255,59 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
                         new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         REQUEST_CAMERA_PERMISSION);
             } else {
-                dispatchTakePictureIntent();
+                try {
+                    dispatchTakePictureIntent();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
     private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        } else {
+            intent = new Intent(Intent.ACTION_PICK);
+        }
         intent.setType("image/*");
-        startActivityForResult(Intent.createChooser(intent, "Chọn ảnh"), REQUEST_IMAGE_PICK);
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        startActivityForResult(intent, REQUEST_IMAGE_PICK);
     }
-    private void dispatchTakePictureIntent() {
+    private boolean checkAndRequestPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    },
+                    REQUEST_CAMERA_PERMISSION);
+            return false;
+        }
+        return true;
+    }
+    private void dispatchTakePictureIntent() throws IOException {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                Toast.makeText(this, "Lỗi khi tạo file ảnh", Toast.LENGTH_SHORT).show();
-            }
-
+            File photoFile = createImageFile();
             if (photoFile != null) {
                 photoUri = FileProvider.getUriForFile(this,
-                        "com.your.package.fileprovider",
+                        getPackageName() + ".fileprovider",
                         photoFile);
+
+                // Cấp quyền tạm thời cho camera
+                List<ResolveInfo> resInfoList = getPackageManager()
+                        .queryIntentActivities(takePictureIntent, PackageManager.MATCH_DEFAULT_ONLY);
+                for (ResolveInfo resolveInfo : resInfoList) {
+                    grantUriPermission(resolveInfo.activityInfo.packageName,
+                            photoUri,
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                }
+
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
@@ -228,11 +316,18 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
+
+        // Sử dụng getExternalFilesDir thay vì getExternalStorageDirectory
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        if (!storageDir.exists()) {
+            storageDir.mkdirs();
+        }
+
         File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
+                imageFileName,
+                ".jpg",
+                storageDir
         );
 
         currentPhotoPath = image.getAbsolutePath();
@@ -244,16 +339,93 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
 
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_IMAGE_PICK && data != null) {
+                // Xử lý chọn ảnh từ thư viện
                 photoUri = data.getData();
-                ivScrapPhoto.setImageURI(photoUri);
+                try {
+                    // Thêm quyền truy cập tạm thời
+                    getContentResolver().takePersistableUriPermission(photoUri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    setImageToImageView(photoUri);
+                } catch (SecurityException e) {
+                    // Nếu không thể lấy quyền persistable, thử cách khác
+                    grantUriPermission(getPackageName(), photoUri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    setImageToImageView(photoUri);
+                }
             } else if (requestCode == REQUEST_IMAGE_CAPTURE) {
-                // Hiển thị ảnh vừa chụp
-                ivScrapPhoto.setImageURI(photoUri);
-
-                // Thêm ảnh vào MediaStore để hiển thị trong thư viện
-                galleryAddPic();
+                // Ảnh chụp từ camera đã được xử lý qua FileProvider
+                if (photoUri != null) {
+                    setImageToImageView(photoUri);
+                    galleryAddPic();
+                }
             }
         }
+    }
+
+    private Uri saveBitmapToFile(Bitmap bitmap) {
+        try {
+            File photoFile = createImageFile();
+            FileOutputStream fos = new FileOutputStream(photoFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fos);
+            fos.flush();
+            fos.close();
+            return FileProvider.getUriForFile(this,
+                    getPackageName() + ".fileprovider",
+                    photoFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    private void setImageToImageView(Uri imageUri) {
+        try {
+            // Mở luồng đọc với quyền tạm thời
+            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+
+            // Đọc thông tin ảnh
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(inputStream, null, options);
+            inputStream.close();
+
+            // Tính toán tỷ lệ giảm kích thước
+            options.inSampleSize = calculateInSampleSize(options,
+                    ivScrapPhoto.getWidth(),
+                    ivScrapPhoto.getHeight());
+            options.inJustDecodeBounds = false;
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
+
+            // Đọc lại ảnh với kích thước đã giảm
+            inputStream = getContentResolver().openInputStream(imageUri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream, null, options);
+            inputStream.close();
+
+            if (bitmap != null) {
+                ivScrapPhoto.setImageBitmap(bitmap);
+            } else {
+                Toast.makeText(this, "Không thể đọc ảnh", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Lỗi khi xử lý ảnh: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+        return inSampleSize;
     }
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
@@ -265,7 +437,11 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                dispatchTakePictureIntent();
+                try {
+                    dispatchTakePictureIntent();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             } else {
                 Toast.makeText(this, "Cần cấp quyền camera để chụp ảnh", Toast.LENGTH_SHORT).show();
             }
@@ -348,6 +524,11 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
     private void setupRecyclerView() {
         collectorList = new ArrayList<>();
         adapter = new CollectorAdapter(this, collectorList);
+        // Thêm click listener cho item
+        adapter.setOnCollectorClickListener((collector, position) -> {
+            adapter.setSelectedPosition(position);
+            // Lưu collector được chọn nếu cần
+        });
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(adapter);
     }
@@ -436,11 +617,130 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
             return false;
         }
 
-        // Thêm các validate khác nếu cần
+        if (selectedScraps.isEmpty()) {
+            showError("Vui lòng chọn ít nhất một loại phế liệu");
+            return false;
+        }
+
+        // Kiểm tra số lượng phế liệu đã nhập
+        try {
+            if (selectedScraps.contains("Giấy") && etPaper.getText().toString().isEmpty()) {
+                showError("Vui lòng nhập số lượng giấy");
+                return false;
+            }
+            if (selectedScraps.contains("Nhựa") && etPlastic.getText().toString().isEmpty()) {
+                showError("Vui lòng nhập số lượng nhựa");
+                return false;
+            }
+            if (selectedScraps.contains("Sắt") && etMetal.getText().toString().isEmpty()) {
+                showError("Vui lòng nhập số lượng sắt");
+                return false;
+            }
+        } catch (Exception e) {
+            showError("Số lượng không hợp lệ");
+            return false;
+        }
+
         return true;
     }
 
     private void showError(String message) {
-        // Hiển thị thông báo lỗi (có thể dùng Toast hoặc Snackbar)
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    // Chuyển đổi ảnh sang base 4
+    private String convertImageToBase64(Uri imageUri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            return Base64.encodeToString(byteArray, Base64.DEFAULT);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void confirmBooking() {
+        if (!validateBooking()) {
+            return;
+        }
+
+        // Kiểm tra đã chọn người thu gom chưa
+        if (adapter.getSelectedPosition() == -1) {
+            Toast.makeText(this, "Vui lòng chọn người thu gom", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Lấy thông tin người thu gom được chọn
+        Collector selectedCollector = collectorList.get(adapter.getSelectedPosition());
+
+        // Tạo đối tượng booking
+        Map<String, Object> booking = new HashMap<>();
+        booking.put("collectorName", selectedCollector.getName());
+        booking.put("collectorPhone", selectedCollector.getPhone());
+        booking.put("date", selectedDate);
+        booking.put("timeSlot", selectedTimeSlot);
+        booking.put("scrapTypes", selectedScraps);
+        booking.put("scrapData", getScrapData());
+        booking.put("status", "pending"); // Trạng thái ban đầu
+        booking.put("createdAt", new Date());
+        booking.put("userId", FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        if (photoUri != null) {
+            String imageBase64 = convertImageToBase64(photoUri);
+            if (imageBase64 != null) {
+                booking.put("photoBase64", imageBase64);
+            } else {
+                Toast.makeText(this, "Không thể xử lý ảnh", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        saveBookingToFirestore(booking);
+        // Xử lý upload ảnh nếu có
+//        if (photoUri != null) {
+//            uploadImageAndSaveBooking(booking);
+//        } else {
+//            saveBookingToFirestore(booking);
+//        }
+    }
+
+//    private void uploadImageAndSaveBooking(Map<String, Object> booking) {
+//        // Tạo reference để lưu ảnh trong Firebase Storage
+//        String fileName = "scrap_photo_" + System.currentTimeMillis() + ".jpg";
+//        StorageReference storageRef = FirebaseStorage.getInstance().getReference()
+//                .child("booking_photos")
+//                .child(fileName);
+//
+//        // Upload ảnh lên Storage
+//        storageRef.putFile(photoUri)
+//                .addOnSuccessListener(taskSnapshot -> {
+//                    // Lấy URL download sau khi upload thành công
+//                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+//                        booking.put("photoUrl", uri.toString());
+//                        saveBookingToFirestore(booking);
+//                    });
+//                })
+//                .addOnFailureListener(e -> {
+//                    Toast.makeText(this, "Lỗi khi tải lên ảnh: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+//                    // Vẫn lưu booking dù không có ảnh
+//                    saveBookingToFirestore(booking);
+//                });
+//    }
+
+    private void saveBookingToFirestore(Map<String, Object> booking) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("bookings")
+                .add(booking)
+                .addOnSuccessListener(documentReference -> {
+                    Toast.makeText(this, "Đặt thu gom thành công!", Toast.LENGTH_SHORT).show();
+                    // Có thể chuyển về màn hình chính hoặc làm mới form
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Lỗi khi đặt thu gom: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 }
