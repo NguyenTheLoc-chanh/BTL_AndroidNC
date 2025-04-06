@@ -1,0 +1,8 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Màu khi item được chọn (ví dụ: xanh lá) -->
+    <item android:color="#4CAF50" android:state_selected="true" />
+    <!-- Màu khi item được nhấn (tạm thời) -->
+    <item android:color="#4CAF50" android:state_pressed="true" />
+    <!-- Màu mặc định (đen) -->
+    <item android:color="#000000" />
+</selector>

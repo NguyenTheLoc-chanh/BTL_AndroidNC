@@ -45,7 +45,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         loadUserData();
         // Đặt sự kiện chung cho các mục
-        setNavClickListener(navLichSu, HistoryActivity.class);
+        setNavClickListener(navLichSu, HistoryActivity.class,"HISTORY");
         setNavHomeClickListener(navHome, HomeActivity.class);
 
         imgNextLeft.setOnClickListener(new View.OnClickListener() {
@@ -73,13 +73,46 @@ public class ProfileActivity extends AppCompatActivity {
         navLichSu = findViewById(R.id.nav_lichsu);
         navHome = findViewById(R.id.nav_logo);
     }
-    private void setNavClickListener(TextView textView, Class<?> destinationActivity) {
+    private void setNavClickListener(TextView textView, Class<?> destinationActivity, String tag) {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ProfileActivity.this, destinationActivity));
+                resetAllNavItems();
+                textView.setSelected(true);
+
+                Intent intent = new Intent(ProfileActivity.this, destinationActivity);
+                intent.putExtra("NAV_TAG", tag); // Truyền tag để xác định nav item
+                startActivity(intent);
             }
         });
+    }
+    // Reset trạng thái selected của tất cả nav items
+    private void resetAllNavItems() {
+//        navTichDiem.setSelected(false);
+//        navDoiQua.setSelected(false);
+        navLichSu.setSelected(false);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        highlightCurrentNavItem();
+    }
+    private void highlightCurrentNavItem() {
+        resetAllNavItems();
+        String navTag = getIntent().getStringExtra("NAV_TAG");
+
+        if (navTag != null) {
+            switch (navTag) {
+                case "HISTORY":
+                    navLichSu.setSelected(true);
+                    break;
+//                case "GIFTS":
+//                    navDoiQua.setSelected(true);
+//                case "EARN_POINTS":
+//                    navTichDiem.setSelected(true);
+
+            }
+        }
     }
     private void setNavHomeClickListener(ImageView textView, Class<?> destinationActivity) {
         textView.setOnClickListener(new View.OnClickListener() {

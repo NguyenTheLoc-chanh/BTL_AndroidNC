@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -102,7 +103,7 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
     private Sensor lightSensor;
     private float currentLightLevel;
     // Trong phương thức initViews()
-    private Button btnConfirmBooking;
+    private Button btnConfirmBooking, btnClose;
 
     //Nav
     private ImageView imgNextLeft;
@@ -124,8 +125,8 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
         fetchCollectorsFromFirestore();
 
         // Đặt sự kiện chung cho các mục
-        setNavClickListener(navLichSu, HistoryActivity.class);
-        setNavClickListener(navTaiKhoan, ProfileActivity.class);
+        setNavClickListener(navLichSu, HistoryActivity.class,"HISTORY");
+        setNavClickListener(navTaiKhoan, ProfileActivity.class,"PROFILE");
         setNavHomeClickListener(navHome, HomeActivity.class);
 
         imgNextLeft.setOnClickListener(new View.OnClickListener() {
@@ -134,6 +135,12 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
                 finish(); // Quay về trang trước
             }
         });
+        btnClose.setOnClickListener((new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        }));
 
         // Khởi tạo cảm biến ánh sáng
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -144,13 +151,45 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
             }
         }
     }
-    private void setNavClickListener(TextView textView, Class<?> destinationActivity) {
+    private void setNavClickListener(TextView textView, Class<?> destinationActivity, String tag) {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(BookingActivity.this, destinationActivity));
+                resetAllNavItems();
+                textView.setSelected(true);
+
+                Intent intent = new Intent(BookingActivity.this, destinationActivity);
+                intent.putExtra("NAV_TAG", tag); // Truyền tag để xác định nav item
+                startActivity(intent);
             }
         });
+    }
+    // Reset trạng thái selected của tất cả nav items
+    private void resetAllNavItems() {
+//        navTichDiem.setSelected(false);
+//        navDoiQua.setSelected(false);
+        navLichSu.setSelected(false);
+        navTaiKhoan.setSelected(false);
+    }
+    private void highlightCurrentNavItem() {
+        resetAllNavItems();
+        String navTag = getIntent().getStringExtra("NAV_TAG");
+
+        if (navTag != null) {
+            switch (navTag) {
+                case "HISTORY":
+                    navLichSu.setSelected(true);
+                    break;
+                case "PROFILE":
+                    navTaiKhoan.setSelected(true);
+                    break;
+//                case "GIFTS":
+//                    navDoiQua.setSelected(true);
+//                case "EARN_POINTS":
+//                    navTichDiem.setSelected(true);
+
+            }
+        }
     }
     private void setNavHomeClickListener(ImageView textView, Class<?> destinationActivity) {
         textView.setOnClickListener(new View.OnClickListener() {
@@ -164,6 +203,7 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
     @Override
     protected void onResume() {
         super.onResume();
+        highlightCurrentNavItem();
         // Đăng ký listener với kiểm tra null
         if (sensorManager != null && lightSensor != null) {
             sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
@@ -221,6 +261,7 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
         etPlastic = findViewById(R.id.etPlastic);
         etMetal = findViewById(R.id.etMetal);
         // Btn Xác nhận và Close
+        btnClose = findViewById(R.id.btnClose);
         btnConfirmBooking = findViewById(R.id.btnConfirm);
         btnConfirmBooking.setOnClickListener(v -> confirmBooking());
 
@@ -685,7 +726,7 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
         booking.put("timeSlot", selectedTimeSlot);
         booking.put("scrapTypes", selectedScraps);
         booking.put("scrapData", getScrapData());
-        booking.put("status", "pending"); // Trạng thái ban đầu
+        booking.put("status", "Chờ xác nhận"); // Trạng thái ban đầu
         booking.put("createdAt", new Date());
         booking.put("userId", FirebaseAuth.getInstance().getCurrentUser().getUid());
 
@@ -732,14 +773,25 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
 
     private void saveBookingToFirestore(Map<String, Object> booking) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         db.collection("bookings")
                 .add(booking)
                 .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(this, "Đặt thu gom thành công!", Toast.LENGTH_SHORT).show();
-                    // Có thể chuyển về màn hình chính hoặc làm mới form
-                    finish();
-                })
-                .addOnFailureListener(e -> {
+                    DocumentReference userRef = db.collection("users").document(userId);
+                    db.runTransaction(transaction -> {
+                        DocumentSnapshot snapshot = transaction.get(userRef);
+                        Long currentPoints = snapshot.contains("point") ? snapshot.getLong("point") : 0L;
+                        long newPoints = currentPoints + 5;
+                        transaction.update(userRef, "point", newPoints);
+                        return null;
+                    }).addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "Đặt thu gom thành công! Bạn được cộng 5 điểm 🎉", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }).addOnFailureListener(e ->{
+                        Toast.makeText(this, "Đặt lịch thành công, nhưng lỗi khi cộng điểm: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                }).addOnFailureListener(e -> {
                     Toast.makeText(this, "Lỗi khi đặt thu gom: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }

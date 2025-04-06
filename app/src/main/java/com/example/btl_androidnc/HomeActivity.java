@@ -59,8 +59,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         loadUserData();
 
         // Đặt sự kiện chung cho các mục
-        setNavClickListener(navLichSu, HistoryActivity.class);
-        setNavClickListener(navTaiKhoan, ProfileActivity.class);
+        setNavClickListener(navLichSu, HistoryActivity.class,"HISTORY");
+        setNavClickListener(navTaiKhoan, ProfileActivity.class,"PROFILE");
 //       setNavClickListener(navTaiKhoan, TaiKhoanActivity.class);
 
         btnBooking.setOnClickListener(new View.OnClickListener() {
@@ -126,37 +126,69 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private void loadUserData() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            String userId = user.getUid();
-
-            db.collection("users").document(userId)
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
+            db.collection("users")
+                    .document(user.getUid())
+                    .addSnapshotListener((documentSnapshot, e) -> { // Thay get() bằng addSnapshotListener
+                        if (e != null) {
+                            Log.e("Firestore", "Lỗi theo dõi dữ liệu", e);
+                            return;
+                        }
+                        if (documentSnapshot != null && documentSnapshot.exists()) {
                             String name = documentSnapshot.getString("name");
-                            String points = documentSnapshot.getString("point");
-
-                            if (points != null && name !=null) {
+                            Long points = documentSnapshot.getLong("point");
+                            if (points != null && name != null) {
                                 txtUserPoints.setText("Điểm: " + points);
                                 txtName.setText(name);
-                            } else {
-                                txtUserPoints.setText("Điểm: 1");
-                                txtName.setText("Đang cập nhật...");
                             }
                         }
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("Firestore", "Lỗi khi lấy thông tin người dùng", e);
                     });
         }
     }
 
-    private void setNavClickListener(TextView textView, Class<?> destinationActivity) {
+    private void setNavClickListener(TextView textView, Class<?> destinationActivity, String tag) {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(HomeActivity.this, destinationActivity));
+                resetAllNavItems();
+                textView.setSelected(true);
+
+                Intent intent = new Intent(HomeActivity.this, destinationActivity);
+                intent.putExtra("NAV_TAG", tag); // Truyền tag để xác định nav item
+                startActivity(intent);
             }
         });
+    }
+    // Reset trạng thái selected của tất cả nav items
+    private void resetAllNavItems() {
+        navTichDiem.setSelected(false);
+        navDoiQua.setSelected(false);
+        navLichSu.setSelected(false);
+        navTaiKhoan.setSelected(false);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        highlightCurrentNavItem();
+    }
+    private void highlightCurrentNavItem() {
+        resetAllNavItems();
+        String navTag = getIntent().getStringExtra("NAV_TAG");
+
+        if (navTag != null) {
+            switch (navTag) {
+                case "HISTORY":
+                    navLichSu.setSelected(true);
+                    break;
+                case "PROFILE":
+                    navTaiKhoan.setSelected(true);
+                    break;
+                case "GIFTS":
+                    navDoiQua.setSelected(true);
+                case "EARN_POINTS":
+                    navTichDiem.setSelected(true);
+
+            }
+        }
     }
 
     @Override

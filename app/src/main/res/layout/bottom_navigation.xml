@@ -16,7 +16,10 @@
         android:textSize="14sp"
         android:gravity="center"
         android:drawableTop="@drawable/gift_card"
-        android:drawablePadding="4dp"/>
+        android:drawablePadding="4dp"
+        android:textColor="@drawable/nav_text_selector"
+        android:clickable="true"
+        android:focusable="true"/>
 
 
     <TextView
@@ -29,6 +32,9 @@
         android:gravity="center"
         android:drawableTop="@drawable/gift"
         android:drawablePadding="4dp"
+        android:textColor="@drawable/nav_text_selector"
+        android:clickable="true"
+        android:focusable="true"
         />
 
     <!-- Logo ở giữa -->
@@ -50,7 +56,10 @@
         android:textSize="14sp"
         android:gravity="center"
         android:drawableTop="@drawable/history"
-        android:drawablePadding="4dp"/>
+        android:drawablePadding="4dp"
+        android:textColor="@drawable/nav_text_selector"
+        android:clickable="true"
+        android:focusable="true"/>
 
     <TextView
         android:id="@+id/nav_taikhoan"
@@ -61,5 +70,8 @@
         android:textSize="14sp"
         android:gravity="center"
         android:drawableTop="@drawable/account"
-        android:drawablePadding="4dp"/>
+        android:drawablePadding="4dp"
+        android:textColor="@drawable/nav_text_selector"
+        android:clickable="true"
+        android:focusable="true"/>
 </LinearLayout>

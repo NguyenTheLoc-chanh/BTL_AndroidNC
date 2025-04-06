@@ -84,7 +84,6 @@
                     android:text="Chọn người thu gom"
                     android:textSize="16sp"
                     android:textStyle="bold" />
-
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView"
                     android:layout_width="match_parent"
@@ -106,14 +105,13 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginBottom="8dp"/>
-
                 <Button
                     android:id="@+id/btnSelectDate"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:text="Nhấn để chọn ngày"
                     android:backgroundTint="#4CAF50"
-                    android:textColor="@android:color/white"/>
+                    android:text="Nhấn để chọn ngày"
+                    android:textColor="@android:color/white" />
 
                 <TextView
                     android:id="@+id/tvSelectedDate"
