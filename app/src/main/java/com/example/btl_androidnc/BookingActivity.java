@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -63,7 +64,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class BookingActivity extends AppCompatActivity implements SensorEventListener{
+public class BookingActivity extends AppCompatActivity{
     // UI Components
     private RecyclerView recyclerView;
     private Button btnSelectDate;
@@ -98,10 +99,6 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private String currentPhotoPath;
 
-    // Cảm biến
-    private SensorManager sensorManager;
-    private Sensor lightSensor;
-    private float currentLightLevel;
     // Trong phương thức initViews()
     private Button btnConfirmBooking, btnClose;
 
@@ -110,6 +107,7 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
     private TextView navLichSu;
     private TextView navTaiKhoan;
     private ImageView navHome;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,15 +139,6 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
                 finish();
             }
         }));
-
-        // Khởi tạo cảm biến ánh sáng
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        if (sensorManager != null) {
-            lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-            if (lightSensor == null) {
-                Toast.makeText(this, "Thiết bị không hỗ trợ cảm biến ánh sáng", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
     private void setNavClickListener(TextView textView, Class<?> destinationActivity, String tag) {
         textView.setOnClickListener(new View.OnClickListener() {
@@ -204,37 +193,11 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
     protected void onResume() {
         super.onResume();
         highlightCurrentNavItem();
-        // Đăng ký listener với kiểm tra null
-        if (sensorManager != null && lightSensor != null) {
-            sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // Hủy đăng ký listener nếu sensorManager không null
-        if (sensorManager != null) {
-            sensorManager.unregisterListener(this);
-        }
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
-            currentLightLevel = event.values[0];
-
-            // Cảnh báo nếu ánh sáng yếu (chạy trên UI thread)
-            runOnUiThread(() -> {
-                if (currentLightLevel < 10) { // Giá trị ngưỡng có thể điều chỉnh
-                    Toast.makeText(this, "Môi trường quá tối, hãy bật đèn flash", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Xử lý thay đổi độ chính xác nếu cần
     }
 
     private void initViews() {
@@ -451,7 +414,6 @@ public class BookingActivity extends AppCompatActivity implements SensorEventLis
             Toast.makeText(this, "Lỗi khi xử lý ảnh: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-
     private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         final int height = options.outHeight;
         final int width = options.outWidth;
