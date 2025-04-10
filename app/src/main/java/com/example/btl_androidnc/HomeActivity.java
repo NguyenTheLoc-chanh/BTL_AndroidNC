@@ -61,6 +61,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         // Đặt sự kiện chung cho các mục
         setNavClickListener(navLichSu, HistoryActivity.class,"HISTORY");
         setNavClickListener(navTaiKhoan, ProfileActivity.class,"PROFILE");
+        setNavClickListener(navDoiQua, GiftsActivity.class, "GIFTS");
 //       setNavClickListener(navTaiKhoan, TaiKhoanActivity.class);
 
         btnBooking.setOnClickListener(new View.OnClickListener() {

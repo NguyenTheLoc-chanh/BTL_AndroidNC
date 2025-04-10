@@ -1,16 +1,17 @@
 plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
+    id 'org.jetbrains.kotlin.android' version '1.8.22' apply false // Thêm plugin Kotlin nếu cần
 }
 
 android {
     namespace 'com.example.btl_androidnc'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.example.btl_androidnc"
         minSdk 25
-        targetSdk 34
+        targetSdk 34 // Cập nhật targetSdk lên 35 để đồng bộ với compileSdk
         versionCode 1
         versionName "1.0"
 
@@ -24,29 +25,40 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11 // Cập nhật lên Java 11
+        targetCompatibility JavaVersion.VERSION_11 // Cập nhật lên Java 11
+    }
+    packagingOptions {
+        exclude '/values/values.xml' // Thêm để xử lý xung đột tài nguyên
     }
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.3.0'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.recyclerview:recyclerview:1.3.2'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    // Cập nhật các thư viện AndroidX lên phiên bản mới nhất
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.recyclerview:recyclerview:1.3.2' // Đã là phiên bản mới nhất
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.activity:activity:1.10.1'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5' // Cập nhật phiên bản
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1' // Cập nhật phiên bản
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.22")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22")
+    // Giữ lại Kotlin nếu cần
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
+
+    // Glide
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 
+    // DotsIndicator
     implementation 'com.tbuonomo:dotsindicator:4.3'
+
+    // Firebase: Sử dụng BOM để quản lý phiên bản
     implementation platform('com.google.firebase:firebase-bom:33.11.0')
     implementation 'com.google.firebase:firebase-analytics'
-    implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-firestore")
-    implementation 'com.google.firebase:firebase-storage:20.0.0'
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-storage' // Xóa phiên bản riêng lẻ
 }
