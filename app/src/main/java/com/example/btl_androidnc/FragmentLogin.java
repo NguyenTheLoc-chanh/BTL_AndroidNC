@@ -1,5 +1,6 @@
 package com.example.btl_androidnc;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -74,22 +75,31 @@ public class FragmentLogin extends BottomSheetDialogFragment {
                 edtPassword.setError("Vui lòng nhập mật khẩu!");
                 return;
             }
+
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
+                        Context context = getContext(); // lấy context trước
                         if (task.isSuccessful()) {
                             checkAndSaveUserToFirestore(() -> {
-                                Toast.makeText(getActivity(), "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                                if (context != null) {
+                                    Toast.makeText(context, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                                }
                                 // Chuyển sang HomeActivity
-                                Intent intent = new Intent(getActivity(), HomeActivity.class);
-                                startActivity(intent);
+                                if (getActivity() != null) {
+                                    Intent intent = new Intent(getActivity(), HomeActivity.class);
+                                    startActivity(intent);
+                                }
                                 // Đóng FragmentLogin
                                 dismiss();
                             });
                         } else {
-                            Toast.makeText(getActivity(), "Đăng nhập thất bại!", Toast.LENGTH_SHORT).show();
+                            if (context != null) {
+                                Toast.makeText(context, "Đăng nhập thất bại!", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
         });
+
         txtRegister.setOnClickListener(v -> {
             dismiss(); // Đóng FragmentLogin trước khi mở FragmentRegister
             FragmentRegister fragmentRegister = new FragmentRegister();
