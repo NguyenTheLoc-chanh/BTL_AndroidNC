@@ -44,6 +44,7 @@
         <activity android:name=".ProfileActivity" />
         <activity android:name=".BookingActivity"/>
         <activity android:name=".GiftsActivity"/>
+        <activity android:name=".CameraCaptureActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

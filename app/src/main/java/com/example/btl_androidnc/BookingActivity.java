@@ -251,20 +251,8 @@ public class BookingActivity extends AppCompatActivity{
 
         // Xử lý chụp ảnh mới
         btnTakePhoto.setOnClickListener(v -> {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                    != PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        REQUEST_CAMERA_PERMISSION);
-            } else {
-                try {
-                    dispatchTakePictureIntent();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            Intent intent = new Intent(this, CameraCaptureActivity.class);
+            startActivityForResult(intent, REQUEST_IMAGE_CAPTURE); // Sử dụng cùng request code với camera intent
         });
     }
     private void openGallery() {
@@ -279,20 +267,6 @@ public class BookingActivity extends AppCompatActivity{
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
         startActivityForResult(intent, REQUEST_IMAGE_PICK);
-    }
-    private boolean checkAndRequestPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{
-                            Manifest.permission.CAMERA,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    },
-                    REQUEST_CAMERA_PERMISSION);
-            return false;
-        }
-        return true;
     }
     private void dispatchTakePictureIntent() throws IOException {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -346,19 +320,21 @@ public class BookingActivity extends AppCompatActivity{
                 // Xử lý chọn ảnh từ thư viện
                 photoUri = data.getData();
                 try {
-                    // Thêm quyền truy cập tạm thời
                     getContentResolver().takePersistableUriPermission(photoUri,
                             Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     setImageToImageView(photoUri);
                 } catch (SecurityException e) {
-                    // Nếu không thể lấy quyền persistable, thử cách khác
                     grantUriPermission(getPackageName(), photoUri,
                             Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     setImageToImageView(photoUri);
                 }
             } else if (requestCode == REQUEST_IMAGE_CAPTURE) {
-                // Ảnh chụp từ camera đã được xử lý qua FileProvider
-                if (photoUri != null) {
+                // Xử lý ảnh từ CameraCaptureActivity
+                if (data != null && data.getStringExtra("photoUri") != null) {
+                    photoUri = Uri.parse(data.getStringExtra("photoUri"));
+                    setImageToImageView(photoUri);
+                } else if (photoUri != null) {
+                    // Fallback nếu có photoUri từ camera hệ thống
                     setImageToImageView(photoUri);
                     galleryAddPic();
                 }
@@ -709,29 +685,6 @@ public class BookingActivity extends AppCompatActivity{
 //            saveBookingToFirestore(booking);
 //        }
     }
-
-//    private void uploadImageAndSaveBooking(Map<String, Object> booking) {
-//        // Tạo reference để lưu ảnh trong Firebase Storage
-//        String fileName = "scrap_photo_" + System.currentTimeMillis() + ".jpg";
-//        StorageReference storageRef = FirebaseStorage.getInstance().getReference()
-//                .child("booking_photos")
-//                .child(fileName);
-//
-//        // Upload ảnh lên Storage
-//        storageRef.putFile(photoUri)
-//                .addOnSuccessListener(taskSnapshot -> {
-//                    // Lấy URL download sau khi upload thành công
-//                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-//                        booking.put("photoUrl", uri.toString());
-//                        saveBookingToFirestore(booking);
-//                    });
-//                })
-//                .addOnFailureListener(e -> {
-//                    Toast.makeText(this, "Lỗi khi tải lên ảnh: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//                    // Vẫn lưu booking dù không có ảnh
-//                    saveBookingToFirestore(booking);
-//                });
-//    }
 
     private void saveBookingToFirestore(Map<String, Object> booking) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
