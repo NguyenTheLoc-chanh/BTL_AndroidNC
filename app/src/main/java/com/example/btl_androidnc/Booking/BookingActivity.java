@@ -1,4 +1,4 @@
-package com.example.btl_androidnc;
+package com.example.btl_androidnc.Booking;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
@@ -10,15 +10,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorManager;
-import android.hardware.SensorEventListener;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -40,12 +35,16 @@ import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.btl_androidnc.Collector.Collector;
+import com.example.btl_androidnc.Collector.CollectorAdapter;
+import com.example.btl_androidnc.History.HistoryActivity;
+import com.example.btl_androidnc.HomeActivity;
+import com.example.btl_androidnc.ProfileActivity;
+import com.example.btl_androidnc.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 

@@ -1,8 +1,7 @@
-package com.example.btl_androidnc;
+package com.example.btl_androidnc.Gift;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,6 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.btl_androidnc.History.HistoryActivity;
+import com.example.btl_androidnc.HomeActivity;
+import com.example.btl_androidnc.ProfileActivity;
+import com.example.btl_androidnc.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
 

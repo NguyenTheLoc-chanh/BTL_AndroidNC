@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Tiêu đề của Fragment Doi Qua -->
+    <TextView
+        android:id="@+id/titleDoiQua"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đổi quà"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingBottom="20dp"/>
+
+    <!-- Nút đổi quà -->
+    <Button
+        android:id="@+id/buttonDoiQua"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đổi quà"
+        android:background="#358a39"
+        android:textColor="@android:color/white"
+        android:padding="12dp"/>
+
+</LinearLayout>

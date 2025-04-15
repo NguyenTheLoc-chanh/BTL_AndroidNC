@@ -1,4 +1,4 @@
-package com.example.btl_androidnc;
+package com.example.btl_androidnc.Gift;
 
 public class GiftLocation {
     private String name;

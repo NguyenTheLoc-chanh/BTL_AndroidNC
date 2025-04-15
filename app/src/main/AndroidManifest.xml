@@ -40,11 +40,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".HomeActivity" />
-        <activity android:name=".HistoryActivity" />
+        <activity android:name=".History.HistoryActivity" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".BookingActivity"/>
-        <activity android:name=".GiftsActivity"/>
-        <activity android:name=".CameraCaptureActivity"/>
+        <activity android:name=".Booking.BookingActivity"/>
+        <activity android:name=".Gift.GiftsActivity"/>
+        <activity android:name=".Booking.CameraCaptureActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

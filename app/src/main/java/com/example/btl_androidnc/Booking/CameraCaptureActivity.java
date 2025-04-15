@@ -1,4 +1,4 @@
-package com.example.btl_androidnc;
+package com.example.btl_androidnc.Booking;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +8,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,11 +15,9 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.ImageCapture;
 import androidx.camera.view.PreviewView;
-import androidx.core.content.ContextCompat;
 
-import java.io.File;
+import com.example.btl_androidnc.R;
 
 public class CameraCaptureActivity extends AppCompatActivity implements SensorEventListener {
 

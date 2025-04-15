@@ -1,4 +1,4 @@
-package com.example.btl_androidnc;
+package com.example.btl_androidnc.Collector;
 
 public class Collector {
     private String name;

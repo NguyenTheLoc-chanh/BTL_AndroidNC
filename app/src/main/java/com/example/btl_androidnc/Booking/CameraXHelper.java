@@ -1,4 +1,4 @@
-package com.example.btl_androidnc;
+package com.example.btl_androidnc.Booking;
 
 import android.content.Context;
 import android.net.Uri;
