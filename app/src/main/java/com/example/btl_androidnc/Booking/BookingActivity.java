@@ -341,21 +341,21 @@ public class BookingActivity extends AppCompatActivity{
         }
     }
 
-    private Uri saveBitmapToFile(Bitmap bitmap) {
-        try {
-            File photoFile = createImageFile();
-            FileOutputStream fos = new FileOutputStream(photoFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fos);
-            fos.flush();
-            fos.close();
-            return FileProvider.getUriForFile(this,
-                    getPackageName() + ".fileprovider",
-                    photoFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+//    private Uri saveBitmapToFile(Bitmap bitmap) {
+//        try {
+//            File photoFile = createImageFile();
+//            FileOutputStream fos = new FileOutputStream(photoFile);
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fos);
+//            fos.flush();
+//            fos.close();
+//            return FileProvider.getUriForFile(this,
+//                    getPackageName() + ".fileprovider",
+//                    photoFile);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
     private void setImageToImageView(Uri imageUri) {
         try {
             // Mở luồng đọc với quyền tạm thời
@@ -577,6 +577,7 @@ public class BookingActivity extends AppCompatActivity{
         for (DocumentSnapshot doc : documents) {
             Collector collector = doc.toObject(Collector.class);
             if (collector != null) {
+                collector.setId(doc.getId());
                 collectorList.add(collector);
             }
         }
@@ -659,6 +660,7 @@ public class BookingActivity extends AppCompatActivity{
         Map<String, Object> booking = new HashMap<>();
         booking.put("collectorName", selectedCollector.getName());
         booking.put("collectorPhone", selectedCollector.getPhone());
+        booking.put("collectorId", selectedCollector.getId());
         booking.put("date", selectedDate);
         booking.put("timeSlot", selectedTimeSlot);
         booking.put("scrapTypes", selectedScraps);
@@ -677,12 +679,6 @@ public class BookingActivity extends AppCompatActivity{
         }
 
         saveBookingToFirestore(booking);
-        // Xử lý upload ảnh nếu có
-//        if (photoUri != null) {
-//            uploadImageAndSaveBooking(booking);
-//        } else {
-//            saveBookingToFirestore(booking);
-//        }
     }
 
     private void saveBookingToFirestore(Map<String, Object> booking) {

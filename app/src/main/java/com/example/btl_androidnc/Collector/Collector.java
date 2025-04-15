@@ -1,6 +1,7 @@
 package com.example.btl_androidnc.Collector;
 
 public class Collector {
+    private String id;
     private String name;
     private String phone;
     private String address;
@@ -12,12 +13,20 @@ public class Collector {
         // Firestore cần constructor rỗng
     }
 
-    public Collector(String name, String phone, String imageUrl, String address, String birthYear) {
+    public Collector(String id,String name, String phone, String imageUrl, String address, String birthYear) {
         this.name = name;
         this.phone = phone;
         this.address = address;
         this.birthYear = birthYear;
         this.imageUrl = imageUrl;
+        this.id = id;
+    }
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {  // 👈 Thêm setter cho ID
+        this.id = id;
     }
 
     public String getName() {
