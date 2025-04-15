@@ -20,7 +20,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FragmentPhanLoaiRac extends Fragment {
 
@@ -64,18 +66,45 @@ public class FragmentPhanLoaiRac extends Fragment {
                     if (task.isSuccessful()) {
                         historyList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
+                            String id = document.getId();
                             String name = document.getString("collectorName");
                             String phone = document.getString("collectorPhone");
                             String status = document.getString("status");
                             String method = document.getString("method");
                             String date = document.getString("date");
                             String time = document.getString("timeSlot");
+                            String image = document.getString("photoBase64");
+                            Map<String, Object> rawScrapData = (Map<String, Object>) document.get("scrapData");
+                            Map<String, Integer> scrapData = new HashMap<>();
+
+                            if (rawScrapData != null) {
+                                for (Map.Entry<String, Object> entry : rawScrapData.entrySet()) {
+                                    Object value = entry.getValue();
+                                    if (value instanceof Long) {
+                                        scrapData.put(entry.getKey(), ((Long) value).intValue());
+                                    } else if (value instanceof Integer) {
+                                        scrapData.put(entry.getKey(), (Integer) value);
+                                    }
+                                }
+                            }
+                            List<String> scrapTypes = new ArrayList<>();
+                            Object rawScrapTypes = document.get("scrapTypes");
+
+                            if (rawScrapTypes instanceof List<?>) {
+                                for (Object item : (List<?>) rawScrapTypes) {
+                                    if (item instanceof String) {
+                                        scrapTypes.add((String) item);
+                                    }
+                                }
+                            }
+
+
 
                             if (name != null && phone != null && date != null) {
-                                HistoryItem item = new HistoryItem(name, phone,
+                                HistoryItem item = new HistoryItem(id,name, phone,
                                         status != null ? status : "Đã hủy",
                                         method != null ? method : "Thu gom tại nhà",
-                                        date, time);
+                                        date, time, image, scrapData, scrapTypes);
                                 historyList.add(item);
                             }
                         }

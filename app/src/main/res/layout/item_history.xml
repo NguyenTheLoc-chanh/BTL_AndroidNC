@@ -1,30 +1,37 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:elevation="2dp"
-    android:radius="12dp">
+    android:layout_margin="12dp"
+    android:elevation="4dp"
+    android:radius="16dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
+        android:id="@+id/layoutBookingItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/bg_linear_border"
         android:orientation="vertical"
-        android:padding="12dp">
+        android:padding="16dp"
+        android:clickable="true"
+        android:focusable="true">
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
 
             <ImageView
+                android:layout_gravity="center_vertical"
                 android:id="@+id/imgAvatarHis"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
                 android:src="@drawable/ic_launcher_background"
                 android:scaleType="centerCrop"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/ic_launcher_foreground" />
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/bg_avatar_circle"
+                android:clipToOutline="true" />
 
             <LinearLayout
                 android:orientation="vertical"
@@ -33,10 +40,12 @@
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:layout_marginBottom="5dp"
                     android:id="@+id/tvNameColHis"
                     android:text="Tổ Hợp tác ve chai phường Hương Sơ 1"
                     android:textStyle="bold"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
+                    android:textColor="#212121"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -48,13 +57,17 @@
                     android:drawableLeft="@drawable/phone_call"
                     android:drawablePadding="4dp"
                     android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"/>
+                    android:layout_width="wrap_content" />
             </LinearLayout>
 
+            <!-- Trạng thái -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:padding="6dp"
+                android:background="@drawable/bg_status_background"
+                android:layout_marginStart="6dp"
                 android:gravity="center_vertical">
 
                 <ImageView
@@ -71,24 +84,27 @@
                     android:textStyle="bold"
                     android:textSize="13sp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
-
         </LinearLayout>
 
         <TextView
             android:id="@+id/tvMethodHis"
             android:text="Hình thức thu gom: Thu gom tại nhà"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="6dp"
             android:textSize="13sp"
+            android:textColor="#424242"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"/>
+            android:layout_width="wrap_content" />
 
         <TextView
             android:id="@+id/tvDateThuGom"
             android:text="Thời gian đặt lịch: 21/03/2025"
             android:textSize="13sp"
+            android:textColor="#757575"
+            android:layout_marginTop="4dp"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"/>
+            android:layout_width="wrap_content" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

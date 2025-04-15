@@ -45,6 +45,7 @@
         <activity android:name=".Booking.BookingActivity"/>
         <activity android:name=".Gift.GiftsActivity"/>
         <activity android:name=".Booking.CameraCaptureActivity"/>
+        <activity android:name=".History.BookingDetailActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -1,10 +1,12 @@
 package com.example.btl_androidnc.History;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,7 +20,6 @@ import java.util.List;
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
 
     private List<HistoryItem> historyList;
-
     public HistoryAdapter(List<HistoryItem> historyList) {
         this.historyList = historyList;
     }
@@ -28,6 +29,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     public HistoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_history, parent, false);
+
         return new HistoryViewHolder(view);
     }
 
@@ -52,6 +54,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
             holder.txtStatus.setTextColor(Color.GREEN);
             holder.imgStatus.setImageResource(R.drawable.checked); // icon thành công
         }
+
+        holder.layoutBookingItem.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), BookingDetailActivity.class);
+            intent.putExtra("booking_id", item.getId()); // Đảm bảo HistoryItem có getId()
+            v.getContext().startActivity(intent);
+        });
+
     }
 
     @Override
@@ -60,6 +69,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     }
 
     static class HistoryViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout layoutBookingItem;
         ImageView imgAvatar, imgStatus;
         TextView txtName, txtPhone, txtStatus, txtMethod, txtDate;
 
@@ -72,6 +82,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
             txtStatus = itemView.findViewById(R.id.tvStatusHis);
             txtMethod = itemView.findViewById(R.id.tvMethodHis);
             txtDate = itemView.findViewById(R.id.tvDateThuGom);
+
+            layoutBookingItem = itemView.findViewById(R.id.layoutBookingItem);
+
         }
     }
 }
