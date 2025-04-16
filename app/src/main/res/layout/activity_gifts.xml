@@ -23,8 +23,7 @@
             android:layout_height="48dp"
             android:src="@drawable/left_arrow"
             android:padding="12dp"
-            android:contentDescription="Nút quay lại"/> <!-- Thêm mô tả -->
-
+            android:contentDescription="Nút quay lại" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -33,7 +32,7 @@
             android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginLeft="10dp" />
+            android:layout_marginStart="10dp" />
     </LinearLayout>
 
     <!-- Phần giới thiệu -->
@@ -64,30 +63,44 @@
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:background="#BDBDBD"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginBottom="20dp" />
 
-    <!-- Danh sách địa điểm -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewGifts"
+    <!-- Container cho Fragment -->
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="8dp"
-        android:clipToPadding="false"
-        android:scrollbars="vertical"
-        android:contentDescription="Danh sách các địa điểm đổi quà" /> <!-- Thêm mô tả -->
+        android:layout_weight="1" />
 
-    <!-- Nút điều hướng -->
-    <Button
-        android:id="@+id/btnEarnPoints"
+    <!-- Hai nút mới -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_margin="16dp"
-        android:backgroundTint="#4CAF50"
-        android:text="Các điểm thu mua rác tái chế và đổi quà khác"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:padding="8dp" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <Button
+            android:id="@+id/btnOfflineExchange"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_margin="4dp"
+            android:backgroundTint="#4CAF50"
+            android:text="Đổi quà Offline"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btnOnlineExchange"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_margin="4dp"
+            android:backgroundTint="#2196F3"
+            android:text="Đổi quà Online"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+    </LinearLayout>
 
     <!-- Thanh điều hướng cố định dưới cùng -->
     <include

@@ -40,15 +40,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private ImageView menuIcon;
     private NavigationView navigationView;
 
-    //Khai báo navigation_bottom
+    // Khai báo navigation_bottom
     private TextView navTichDiem;
-    private TextView navDoiQua ;
+    private TextView navDoiQua;
     private TextView navLichSu;
     private TextView navTaiKhoan;
-    FirebaseFirestore db;
+    private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private TextView txtName, txtUserPoints;
     private LinearLayout btnBooking;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,26 +63,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         loadUserData();
 
         // Đặt sự kiện chung cho các mục
-        setNavClickListener(navLichSu, HistoryActivity.class,"HISTORY");
-        setNavClickListener(navTaiKhoan, ProfileActivity.class,"PROFILE");
+        setNavClickListener(navLichSu, HistoryActivity.class, "HISTORY");
+        setNavClickListener(navTaiKhoan, ProfileActivity.class, "PROFILE");
         setNavClickListener(navDoiQua, GiftsActivity.class, "GIFTS");
-//       setNavClickListener(navTaiKhoan, TaiKhoanActivity.class);
 
-        btnBooking.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(HomeActivity.this, BookingActivity.class);
-                startActivity(intent);
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
+        btnBooking.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, BookingActivity.class);
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
+
         // Bắt sự kiện mở Navigation Drawer khi nhấn vào menuIcon
-        menuIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawerLayout.openDrawer(navigationView);
-            }
-        });
+        menuIcon.setOnClickListener(v -> drawerLayout.openDrawer(navigationView));
         navigationView.setNavigationItemSelectedListener(this);
 
         // Ds ảnh banner
@@ -109,6 +102,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         handler.postDelayed(runnable, 3000);
     }
+
     private void AnhXa() {
         navTichDiem = findViewById(R.id.nav_tichdiem);
         navDoiQua = findViewById(R.id.nav_doiqua);
@@ -127,12 +121,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         btnBooking = findViewById(R.id.btn_booking);
     }
+
     private void loadUserData() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
+            String userId = user.getUid();
             db.collection("users")
-                    .document(user.getUid())
-                    .addSnapshotListener((documentSnapshot, e) -> { // Thay get() bằng addSnapshotListener
+                    .document(userId)
+                    .addSnapshotListener((documentSnapshot, e) -> {
                         if (e != null) {
                             Log.e("Firestore", "Lỗi theo dõi dữ liệu", e);
                             return;
@@ -150,18 +146,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setNavClickListener(TextView textView, Class<?> destinationActivity, String tag) {
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                resetAllNavItems();
-                textView.setSelected(true);
+        textView.setOnClickListener(v -> {
+            resetAllNavItems();
+            textView.setSelected(true);
 
-                Intent intent = new Intent(HomeActivity.this, destinationActivity);
-                intent.putExtra("NAV_TAG", tag); // Truyền tag để xác định nav item
-                startActivity(intent);
-            }
+            Intent intent = new Intent(HomeActivity.this, destinationActivity);
+            intent.putExtra("NAV_TAG", tag); // Truyền tag để xác định nav item
+            startActivity(intent);
         });
     }
+
     // Reset trạng thái selected của tất cả nav items
     private void resetAllNavItems() {
         navTichDiem.setSelected(false);
@@ -169,11 +163,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         navLichSu.setSelected(false);
         navTaiKhoan.setSelected(false);
     }
+
     @Override
     protected void onResume() {
         super.onResume();
         highlightCurrentNavItem();
     }
+
     private void highlightCurrentNavItem() {
         resetAllNavItems();
         String navTag = getIntent().getStringExtra("NAV_TAG");
@@ -188,9 +184,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     break;
                 case "GIFTS":
                     navDoiQua.setSelected(true);
+                    break;
                 case "EARN_POINTS":
                     navTichDiem.setSelected(true);
-
+                    break;
             }
         }
     }
@@ -204,20 +201,22 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.nav_home){
-
+        if (id == R.id.nav_home) {
+            // Không làm gì nếu đã ở Home
         } else if (id == R.id.nav_his) {
             Intent intent = new Intent(this, HistoryActivity.class);
             startActivity(intent);
-        }else if (id == R.id.nav_feedback) {
-
-        }else if (id == R.id.nav_logout) {
+        } else if (id == R.id.nav_feedback) {
+            // Xử lý feedback
+        } else if (id == R.id.nav_logout) {
+            mAuth.signOut();
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
             finish();
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
-        return false;
+        return true; // Trả về true để xử lý xong
     }
-
 }
-

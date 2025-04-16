@@ -2,29 +2,22 @@ package com.example.btl_androidnc.Gift;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.btl_androidnc.History.HistoryActivity;
 import com.example.btl_androidnc.HomeActivity;
 import com.example.btl_androidnc.ProfileActivity;
 import com.example.btl_androidnc.R;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.DocumentSnapshot;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GiftsActivity extends AppCompatActivity {
-    private RecyclerView recyclerViewGifts;
-    private GiftAdapter adapter;
-    private List<GiftLocation> giftLocationList;
-    private FirebaseFirestore db;
+
     private ImageView imgNextLeft;
     private TextView navLichSu, navTaiKhoan;
     private ImageView navHome;
@@ -34,48 +27,43 @@ public class GiftsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gifts);
 
-        db = FirebaseFirestore.getInstance();
-        recyclerViewGifts = findViewById(R.id.recyclerViewGifts);
+        // Khởi tạo giao diện
         imgNextLeft = findViewById(R.id.imgNextLeft);
         navLichSu = findViewById(R.id.nav_lichsu);
         navTaiKhoan = findViewById(R.id.nav_taikhoan);
         navHome = findViewById(R.id.nav_logo);
 
-        giftLocationList = new ArrayList<>();
-        adapter = new GiftAdapter(this, giftLocationList);
-        recyclerViewGifts.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewGifts.setAdapter(adapter);
+        // Tải GiftListFragment mặc định
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, new GiftListFragment());
+        transaction.commit();
 
-        fetchGiftLocationsFromFirestore();
-
+        // Sự kiện nút quay lại
         imgNextLeft.setOnClickListener(v -> finish());
 
-        // Đặt sự kiện cho các mục điều hướng
+        // Đặt sự kiện điều hướng
         setNavClickListener(navLichSu, HistoryActivity.class, "HISTORY");
         setNavClickListener(navTaiKhoan, ProfileActivity.class, "PROFILE");
         setNavHomeClickListener(navHome, HomeActivity.class);
 
-        Button btnEarnPoints = findViewById(R.id.btnEarnPoints);
-        btnEarnPoints.setOnClickListener(v -> {
-            // Có thể mở một Activity hoặc xử lý sự kiện để hiển thị thêm các địa điểm khác
+        // Sự kiện cho nút Đổi quà Offline
+        Button btnOfflineExchange = findViewById(R.id.btnOfflineExchange);
+        btnOfflineExchange.setOnClickListener(v -> {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.fragment_container, new GiftListFragment());
+            ft.commit();
         });
-    }
 
-    private void fetchGiftLocationsFromFirestore() {
-        db.collection("gift_locations")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        giftLocationList.clear();
-                        for (DocumentSnapshot document : task.getResult()) {
-                            GiftLocation giftLocation = document.toObject(GiftLocation.class);
-                            if (giftLocation != null) {
-                                giftLocationList.add(giftLocation);
-                            }
-                        }
-                        adapter.notifyDataSetChanged();
-                    }
-                });
+        // Sự kiện cho nút Đổi quà Online
+        Button btnOnlineExchange = findViewById(R.id.btnOnlineExchange);
+        btnOnlineExchange.setOnClickListener(v -> {
+            // Chuyển sang OnlineExchangeFragment hoặc Activity mới
+            // Hiện tại, tôi sẽ tạo một Fragment mới, bạn có thể thay bằng Activity nếu muốn
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.fragment_container, new OnlineExchangeFragment());
+            ft.addToBackStack(null); // Cho phép quay lại
+            ft.commit();
+        });
     }
 
     private void setNavClickListener(TextView textView, Class<?> destinationActivity, String tag) {
@@ -119,12 +107,11 @@ public class GiftsActivity extends AppCompatActivity {
                     navTaiKhoan.setSelected(true);
                     break;
                 case "GIFTS":
-                    // Đánh dấu mục "Đổi quà" là đang chọn
                     findViewById(R.id.nav_doiqua).setSelected(true);
                     break;
             }
         } else {
-            findViewById(R.id.nav_doiqua).setSelected(true); // Mặc định chọn mục "Đổi quà"
+            findViewById(R.id.nav_doiqua).setSelected(true);
         }
     }
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- Hiển thị điểm hiện tại -->
+    <TextView
+        android:id="@+id/tvCurrentPoints"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Điểm hiện tại: 0"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:padding="8dp" />
+
+    <!-- RecyclerView cho danh sách quà -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewRewards"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:scrollbars="vertical" />
+</LinearLayout>

@@ -11,16 +11,16 @@
     <uses-feature android:name="android.hardware.sensor.light" />
 
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission
         android:name="android.permission.ACCESS_MEDIA_LOCATION"
         android:maxSdkVersion="29" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission
         android:name="android.permission.ACCESS_MEDIA_LOCATION"
         android:maxSdkVersion="29" />
@@ -39,6 +39,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BTL_AndroidNC"
         tools:targetApi="31">
+        <activity
+            android:name=".Gift.OnlineExchangeFragment"
+            android:exported="false" />
+        <activity
+            android:name=".Gift.MapActivity"
+            android:exported="false" />
         <activity
             android:name=".Collector.BookingDetailsCollector"
             android:exported="false" />
@@ -59,7 +65,7 @@
         <activity android:name=".Booking.CameraCaptureActivity" />
         <activity android:name=".History.BookingDetailActivity" />
         <activity android:name=".Collector.ListBooking" />
-        <activity android:name=".Collector.CollectorHomeActivity"/>
+        <activity android:name=".Collector.CollectorHomeActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -70,6 +76,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDSCpyqo-0LPdNeFevazn4_oE3xm6hM0t0" />
     </application>
 
 </manifest>
