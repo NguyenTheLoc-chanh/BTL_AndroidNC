@@ -1,4 +1,4 @@
-package com.example.btl_androidnc;
+package com.example.btl_androidnc.Collector;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +20,9 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.btl_androidnc.Booking.BookingActivity;
 import com.example.btl_androidnc.Gift.GiftsActivity;
 import com.example.btl_androidnc.History.HistoryActivity;
+import com.example.btl_androidnc.ProfileActivity;
+import com.example.btl_androidnc.R;
+import com.example.btl_androidnc.VPAdapterBanner;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,7 +32,7 @@ import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator;
 import java.util.Arrays;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class CollectorHomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private ViewPager2 bannerViewPager;
     private WormDotsIndicator dotsIndicator;
     private Handler handler = new Handler(Looper.getMainLooper());
@@ -52,7 +55,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_collector_home);
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -65,12 +68,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         setNavClickListener(navLichSu, HistoryActivity.class,"HISTORY");
         setNavClickListener(navTaiKhoan, ProfileActivity.class,"PROFILE");
         setNavClickListener(navDoiQua, GiftsActivity.class, "GIFTS");
-//       setNavClickListener(navTaiKhoan, TaiKhoanActivity.class);
 
         btnBooking.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(HomeActivity.this, BookingActivity.class);
+                Intent intent = new Intent(CollectorHomeActivity.this, ListBooking.class);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
@@ -156,7 +158,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 resetAllNavItems();
                 textView.setSelected(true);
 
-                Intent intent = new Intent(HomeActivity.this, destinationActivity);
+                Intent intent = new Intent(CollectorHomeActivity.this, destinationActivity);
                 intent.putExtra("NAV_TAG", tag); // Truyền tag để xác định nav item
                 startActivity(intent);
             }

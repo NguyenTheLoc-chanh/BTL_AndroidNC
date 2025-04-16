@@ -15,6 +15,8 @@ public class HistoryItem {
     private Map<String, Integer> scrapData;
     private List<String> scrapTypes;
 
+    public HistoryItem() {}
+
     public HistoryItem(String id,String name, String phone, String status, String method, String date, String time, String Image,Map<String, Integer> scrapData,List<String> scrapTypes) {
         this.id = id;
         this.name = name;

@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.btl_androidnc.Collector.CollectorHomeActivity;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -75,22 +76,49 @@ public class FragmentLogin extends BottomSheetDialogFragment {
                 edtPassword.setError("Vui lòng nhập mật khẩu!");
                 return;
             }
-
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
-                        Context context = getContext(); // lấy context trước
+                        Context context = getContext();
                         if (task.isSuccessful()) {
                             checkAndSaveUserToFirestore(() -> {
-                                if (context != null) {
-                                    Toast.makeText(context, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                if (user != null) {
+                                    String uid = user.getUid();
+
+                                    // Kiểm tra trong collection 'collector'
+                                    db.collection("collector")
+                                            .whereEqualTo("userID", uid)
+                                            .get()
+                                            .addOnSuccessListener(documentSnapshot -> {
+                                                if (!documentSnapshot.isEmpty()) {
+                                                    // Nếu tồn tại trong bảng collector
+                                                    if (context != null) {
+                                                        Toast.makeText(context, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                    // Chuyển đến CollectorHomeActivity
+                                                    if (getActivity() != null) {
+                                                        Intent intent = new Intent(getActivity(), CollectorHomeActivity.class);
+                                                        startActivity(intent);
+                                                    }
+                                                } else {
+                                                    // Không phải collector → chuyển sang HomeActivity
+                                                    if (context != null) {
+                                                        Toast.makeText(context, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                    if (getActivity() != null) {
+                                                        Intent intent = new Intent(getActivity(), HomeActivity.class);
+                                                        startActivity(intent);
+                                                    }
+                                                }
+                                                dismiss(); // Đóng FragmentLogin
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Log.e("Firestore", "Lỗi khi kiểm tra collector", e);
+                                                if (context != null) {
+                                                    Toast.makeText(context, "Lỗi kiểm tra vai trò người dùng!", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
                                 }
-                                // Chuyển sang HomeActivity
-                                if (getActivity() != null) {
-                                    Intent intent = new Intent(getActivity(), HomeActivity.class);
-                                    startActivity(intent);
-                                }
-                                // Đóng FragmentLogin
-                                dismiss();
                             });
                         } else {
                             if (context != null) {

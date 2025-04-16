@@ -17,6 +17,15 @@
     <uses-permission
         android:name="android.permission.ACCESS_MEDIA_LOCATION"
         android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission
+        android:name="android.permission.ACCESS_MEDIA_LOCATION"
+        android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -31,6 +40,9 @@
         android:theme="@style/Theme.BTL_AndroidNC"
         tools:targetApi="31">
         <activity
+            android:name=".Collector.BookingDetailsCollector"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -42,10 +54,12 @@
         <activity android:name=".HomeActivity" />
         <activity android:name=".History.HistoryActivity" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".Booking.BookingActivity"/>
-        <activity android:name=".Gift.GiftsActivity"/>
-        <activity android:name=".Booking.CameraCaptureActivity"/>
-        <activity android:name=".History.BookingDetailActivity"/>
+        <activity android:name=".Booking.BookingActivity" />
+        <activity android:name=".Gift.GiftsActivity" />
+        <activity android:name=".Booking.CameraCaptureActivity" />
+        <activity android:name=".History.BookingDetailActivity" />
+        <activity android:name=".Collector.ListBooking" />
+        <activity android:name=".Collector.CollectorHomeActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -57,12 +71,5 @@
                 android:resource="@xml/file_paths" />
         </provider>
     </application>
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION"
-        android:maxSdkVersion="29" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
 </manifest>
