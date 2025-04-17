@@ -25,7 +25,7 @@ import java.util.Map;
 public class ProfileActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private EditText edtName, edtGender, edtDob, edtAddress;
+    private EditText edtName, edtGender, edtDob, edtAddress, edtUdPhone;
     private TextView txtName;
     RadioGroup radioGroupGender;
     RadioButton rbFemale, rbMale;
@@ -66,6 +66,7 @@ public class ProfileActivity extends AppCompatActivity {
         rbFemale = findViewById(R.id.rbFemale);
         rbMale = findViewById(R.id.rbMale);
         edtDob = findViewById(R.id.edtUdBob);
+        edtUdPhone = findViewById(R.id.edtUdPhone);
         edtAddress = findViewById(R.id.edtAddress);
         btnUpdate = findViewById(R.id.btnUdProfile);
 
@@ -133,7 +134,9 @@ public class ProfileActivity extends AppCompatActivity {
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
+                            txtName.setText(documentSnapshot.getString("name"));
                             edtName.setText(documentSnapshot.getString("name"));
+                            edtUdPhone.setText(documentSnapshot.getString("phone"));
                             edtDob.setText(documentSnapshot.getString("dob"));
                             edtAddress.setText(documentSnapshot.getString("address"));
                             // Xử lý chọn giới tính đúng cách
@@ -158,6 +161,7 @@ public class ProfileActivity extends AppCompatActivity {
             String userId = user.getUid();
             Map<String, Object> updates = new HashMap<>();
             updates.put("name", edtName.getText().toString().trim());
+            updates.put("phone", edtUdPhone.getText().toString().trim());
             updates.put("gender", gender);
             updates.put("dob", edtDob.getText().toString().trim());
             updates.put("address", edtAddress.getText().toString().trim());

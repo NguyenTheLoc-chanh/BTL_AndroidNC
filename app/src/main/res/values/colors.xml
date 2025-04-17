@@ -4,4 +4,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="selected_item_color">#4CAF50</color>
     <color name="default_item_color">#FFAAAAAA</color>
+    <color name="gray">#757575</color>
+    <color name="green">#4CAF50</color>
 </resources>

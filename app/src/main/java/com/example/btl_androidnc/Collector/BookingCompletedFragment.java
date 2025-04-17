@@ -78,7 +78,10 @@ public class BookingCompletedFragment extends Fragment {
                                                     if (userDoc.exists()) {
                                                         String name = userDoc.getString("name");
                                                         String address = userDoc.getString("address");
+                                                        String phone = userDoc.getString("phone");
+
                                                         booking.setUserName(name);
+                                                        booking.setUserPhone(phone);
                                                         booking.setUserAddress(address);
                                                     }
                                                     bookingList.add(booking);

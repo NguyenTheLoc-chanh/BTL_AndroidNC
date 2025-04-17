@@ -67,9 +67,11 @@ public class BookingDetailsCollector extends AppCompatActivity {
                                         if (userDoc.exists()) {
                                             String userName = userDoc.getString("name");
                                             String userAddress = userDoc.getString("address");
+                                            String userPhone = userDoc.getString("phone");
 
                                             // Gán dữ liệu người dùng lên UI
                                             ((TextView) findViewById(R.id.tvDetailNameCol)).setText(userName);
+                                            ((TextView) findViewById(R.id.tvDetailPhoneCol)).setText("SĐT: "+ userPhone);
                                             ((TextView) findViewById(R.id.tvDetailAddressCol)).setText("Địa chỉ: " + userAddress);
                                         } else {
                                             Log.w("FIREBASE", "Không tìm thấy người dùng với userId: " + userId);

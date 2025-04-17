@@ -43,7 +43,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
     public void onBindViewHolder(@NonNull BookingViewHolder holder, int position) {
         BookingModel model = list.get(position);
         holder.txtName.setText(model.getUserName());
-//        holder.txtPhone.setText("SĐT: " + model.getId());
+        holder.txtPhone.setText("SĐT: " + model.getUserPhone());
         holder.tvAddress.setText("Địa chỉ: " + model.getUserAddress());
         holder.txtDate.setText("Ngày: " + model.getDate() + " - " + model.getTimeSlot());
         holder.txtStatus.setText(model.getStatus());

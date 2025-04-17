@@ -77,6 +77,9 @@ public class BookingConfirmedFragment extends Fragment {
                                                     if (userDoc.exists()) {
                                                         String name = userDoc.getString("name");
                                                         String address = userDoc.getString("address");
+                                                        String phone = userDoc.getString("phone");
+
+                                                        booking.setUserPhone(phone);
                                                         booking.setUserName(name);
                                                         booking.setUserAddress(address);
                                                     }

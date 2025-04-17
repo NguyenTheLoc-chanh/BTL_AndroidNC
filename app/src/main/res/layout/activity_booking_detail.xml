@@ -12,14 +12,13 @@
         <!-- Thanh tiêu đề -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:background="#358a39"
-            android:paddingTop="20dp"
-            android:paddingBottom="10dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:elevation="4dp">
 
             <ImageView
                 android:id="@+id/imgNextLeft"
@@ -36,8 +35,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:gravity="center"
-                android:paddingEnd="24dp" />
+                android:gravity="center" />
         </LinearLayout>
 
         <!-- Ảnh người thu gom -->
@@ -49,18 +47,19 @@
             android:layout_marginTop="24dp"
             android:src="@drawable/ic_launcher_foreground"
             android:scaleType="centerCrop"
-            android:background="@drawable/ic_launcher_foreground"
             android:padding="4dp" />
 
         <!-- Thông tin chi tiết -->
         <TextView
+            android:paddingLeft="20dp"
             android:id="@+id/tvDetailName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Tên người thu gom"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="24dp"
+            android:textColor="#000000" />
 
         <TextView
             android:id="@+id/tvDetailPhone"
@@ -68,7 +67,9 @@
             android:layout_height="wrap_content"
             android:text="Số điện thoại"
             android:textSize="14sp"
-            android:textColor="#555" />
+            android:textColor="#666666"
+            android:layout_marginTop="4dp"
+            android:paddingLeft="20dp"/>
 
         <TextView
             android:id="@+id/tvDetailStatus"
@@ -78,7 +79,8 @@
             android:textSize="14sp"
             android:textColor="#E53935"
             android:textStyle="bold"
-            android:layout_marginTop="12dp" />
+            android:layout_marginTop="12dp"
+            android:paddingLeft="20dp"/>
 
         <TextView
             android:id="@+id/tvDetailMethod"
@@ -86,43 +88,57 @@
             android:layout_height="wrap_content"
             android:text="Hình thức: Thu gom tại nhà"
             android:textSize="14sp"
-            android:layout_marginTop="8dp"/>
+            android:textColor="#444444"
+            android:layout_marginTop="8dp"
+            android:paddingLeft="20dp"/>
 
         <TextView
             android:id="@+id/tvDetailDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Ngày thu gom"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:textColor="#444444"
+            android:layout_marginTop="4dp"
+            android:paddingLeft="20dp"/>
 
         <TextView
             android:id="@+id/tvDetailTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Khung giờ"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:textColor="#444444"
+            android:layout_marginTop="4dp"
+            android:paddingLeft="20dp"/>
+
+        <!-- Nhãn loại phế liệu -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Loại phế liệu đã chọn:"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="24dp"
+            android:textColor="#000000"
+            android:paddingLeft="20dp"/>
 
+        <!-- Danh sách loại phế liệu -->
         <LinearLayout
             android:id="@+id/layoutScrapItems"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="8dp"
-            android:background="#f0f0f0"
+            android:padding="12dp"
+            android:background="#f7f7f7"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
             android:divider="?android:attr/dividerHorizontal"
-            android:showDividers="middle" />
-
+            android:showDividers="middle"
+            android:elevation="1dp"
+            android:backgroundTint="#f0f0f0"
+            android:clipToPadding="false"/>
     </LinearLayout>
-
 </ScrollView>

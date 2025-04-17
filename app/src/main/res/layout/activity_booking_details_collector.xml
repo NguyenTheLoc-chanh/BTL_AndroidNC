@@ -60,7 +60,8 @@
             android:text="Tên người đặt đơn"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            android:paddingLeft="20dp"/>
 
         <TextView
             android:id="@+id/tvDetailPhoneCol"
@@ -68,14 +69,16 @@
             android:layout_height="wrap_content"
             android:text="Số điện thoại"
             android:textSize="14sp"
-            android:textColor="#555" />
+            android:textColor="#555"
+            android:paddingLeft="20dp"/>
         <TextView
             android:id="@+id/tvDetailAddressCol"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Số điện thoại"
             android:textSize="14sp"
-            android:textColor="#555" />
+            android:textColor="#555"
+            android:paddingLeft="20dp"/>
 
         <TextView
             android:id="@+id/tvDetailStatus"
@@ -85,7 +88,8 @@
             android:textSize="14sp"
             android:textColor="#E53935"
             android:textStyle="bold"
-            android:layout_marginTop="12dp" />
+            android:layout_marginTop="12dp"
+            android:paddingLeft="20dp"/>
 
         <TextView
             android:id="@+id/tvDetailMethod"
@@ -93,28 +97,32 @@
             android:layout_height="wrap_content"
             android:text="Hình thức: Thu gom tại nhà"
             android:textSize="14sp"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:paddingLeft="20dp"/>
 
         <TextView
             android:id="@+id/tvDetailDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Ngày thu gom"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:paddingLeft="20dp"/>
 
         <TextView
             android:id="@+id/tvDetailTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Khung giờ"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:paddingLeft="20dp"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Loại phế liệu đặt thu gom"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            android:paddingLeft="20dp"/>
 
         <LinearLayout
             android:id="@+id/layoutScrapItems"
