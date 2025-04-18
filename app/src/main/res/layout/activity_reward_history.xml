@@ -3,24 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
-
-    <TextView
-        android:id="@+id/tvCurrentPoints"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Điểm hiện tại: 0"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+    android:padding="8dp">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewRewards"
+        android:id="@+id/recyclerViewRewardHistory"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="8dp"
         android:clipToPadding="false"
         android:scrollbars="vertical"
-        android:contentDescription="Danh sách phần thưởng" />
+        android:contentDescription="Danh sách lịch sử đổi quà" />
 
 </LinearLayout>

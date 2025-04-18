@@ -43,6 +43,7 @@
         android:padding="16dp">
 
         <TextView
+            android:id="@+id/tvInstruction1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Mời bạn mang rác tái chế tới các địa điểm sau để được tích điểm đổi quà"
@@ -50,6 +51,7 @@
             android:textSize="18sp" />
 
         <TextView
+            android:id="@+id/tvInstruction2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"

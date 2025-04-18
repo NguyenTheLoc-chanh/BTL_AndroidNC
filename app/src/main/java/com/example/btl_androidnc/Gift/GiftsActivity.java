@@ -21,7 +21,7 @@ public class GiftsActivity extends AppCompatActivity {
     private ImageView imgNextLeft;
     private TextView navLichSu, navTaiKhoan;
     private ImageView navHome;
-
+    private TextView tvInstruction1, tvInstruction2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +32,8 @@ public class GiftsActivity extends AppCompatActivity {
         navLichSu = findViewById(R.id.nav_lichsu);
         navTaiKhoan = findViewById(R.id.nav_taikhoan);
         navHome = findViewById(R.id.nav_logo);
+        tvInstruction1 = findViewById(R.id.tvInstruction1);
+        tvInstruction2 = findViewById(R.id.tvInstruction2);
 
         // Tải GiftListFragment mặc định
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -49,6 +51,8 @@ public class GiftsActivity extends AppCompatActivity {
         // Sự kiện cho nút Đổi quà Offline
         Button btnOfflineExchange = findViewById(R.id.btnOfflineExchange);
         btnOfflineExchange.setOnClickListener(v -> {
+            tvInstruction1.setText("Mời bạn mang rác tái chế tới các địa điểm sau để được tích điểm đổi quà");
+            tvInstruction2.setText("Danh sách điểm thu mua rác tái chế và đổi quà");
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.fragment_container, new GiftListFragment());
             ft.commit();
@@ -59,6 +63,8 @@ public class GiftsActivity extends AppCompatActivity {
         btnOnlineExchange.setOnClickListener(v -> {
             // Chuyển sang OnlineExchangeFragment hoặc Activity mới
             // Hiện tại, tôi sẽ tạo một Fragment mới, bạn có thể thay bằng Activity nếu muốn
+            tvInstruction1.setText("Sau khi đổi quà hãy nhấn và lịch sử để xem mã đã đổi và nhập vào phần voucher giảm giá của ứng dụng mua sắm của bạn");
+            tvInstruction2.setText("Danh sách voucher");
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.fragment_container, new OnlineExchangeFragment());
             ft.addToBackStack(null); // Cho phép quay lại

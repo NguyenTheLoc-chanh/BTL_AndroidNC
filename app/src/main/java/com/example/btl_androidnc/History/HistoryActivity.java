@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.btl_androidnc.Gift.RewardHistoryFragment;
 import com.example.btl_androidnc.R;
 
 public class HistoryActivity extends AppCompatActivity {
@@ -17,41 +18,20 @@ public class HistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-
         ImageView imgNextLeft = findViewById(R.id.imgNextLeft);
         TextView tabClassify = findViewById(R.id.tabClassify);
         TextView tabGift = findViewById(R.id.tabGift);
-        imgNextLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish(); // Quay về trang trước
-            }
-        });
+        imgNextLeft.setOnClickListener(v -> finish());
 
         // Thiết lập sự kiện click cho các tab
-        tabClassify.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Chuyển fragment khi nhấn vào "Phân loại rác"
-                loadFragment(new FragmentPhanLoaiRac());
-            }
-        });
+        tabClassify.setOnClickListener(v -> loadFragment(new FragmentPhanLoaiRac()));
+        tabGift.setOnClickListener(v -> loadFragment(new RewardHistoryFragment()));
 
-        tabGift.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Chuyển fragment khi nhấn vào "Đổi quà"
-                loadFragment(new FragmentDoiQua());
-            }
-        });
-
-        // Hiển thị fragment mặc định khi activity khởi tạo
+        // Hiển thị fragment mặc định
         loadFragment(new FragmentPhanLoaiRac());
     }
 
-    // Hàm chuyển đổi fragment
     private void loadFragment(Fragment fragment) {
-        // Gọi FragmentManager để thực hiện giao dịch thay thế fragment
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragmentContainer, fragment);
         transaction.commit();
