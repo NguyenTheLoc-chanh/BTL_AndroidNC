@@ -1,6 +1,10 @@
 package com.example.btl_androidnc;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager2.widget.ViewPager2;
@@ -23,6 +28,7 @@ import com.example.btl_androidnc.History.HistoryActivity;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator;
 
@@ -113,6 +119,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         };
 
         handler.postDelayed(runnable, 3000);
+        listenToNotifications();
     }
     private void AnhXa() {
         navTichDiem = findViewById(R.id.nav_tichdiem);
@@ -225,6 +232,56 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.closeDrawer(GravityCompat.START);
         return false;
     }
+
+    // Thông báo
+    private void listenToNotifications() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null) return;
+
+        db.collection("notifications")
+                .whereEqualTo("userId", user.getUid())
+                .whereEqualTo("seen", false) // chỉ lấy thông báo mới
+                .addSnapshotListener((snapshots, e) -> {
+                    if (e != null) {
+                        Log.w("NOTIFY", "Listen failed.", e);
+                        return;
+                    }
+
+                    if (snapshots != null && !snapshots.isEmpty()) {
+                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                            if (dc.getType() == DocumentChange.Type.ADDED) {
+                                String message = dc.getDocument().getString("message");
+                                showLocalNotification(message);
+
+                                // Đánh dấu đã xem nếu bạn muốn
+                                dc.getDocument().getReference().update("seen", true);
+                            }
+                        }
+                    }
+                });
+    }
+    private void showLocalNotification(String message) {
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String channelId = "default_channel_id";
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Thông báo",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            manager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.logoapp) // bạn nên có icon trong res/drawable
+                .setContentTitle("Thông báo mới")
+                .setContentText(message)
+                .setAutoCancel(true);
+
+        manager.notify((int) System.currentTimeMillis(), builder.build());
+    }
+
 
 }
 
