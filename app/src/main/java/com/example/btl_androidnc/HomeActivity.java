@@ -37,14 +37,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private int currentPage = 0;
 
     private DrawerLayout drawerLayout;
-    private ImageView menuIcon;
+    private ImageView menuIcon, account, iconBell;
     private NavigationView navigationView;
 
     //Khai báo navigation_bottom
-    private TextView navTichDiem;
-    private TextView navDoiQua ;
-    private TextView navLichSu;
-    private TextView navTaiKhoan;
+    private TextView navTichDiem, navDoiQua, navLichSu, navTaiKhoan;
     FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private TextView txtName, txtUserPoints;
@@ -73,6 +70,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 Intent intent = new Intent(HomeActivity.this, BookingActivity.class);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            }
+        });
+
+        account.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
+                startActivity(intent);
             }
         });
         // Bắt sự kiện mở Navigation Drawer khi nhấn vào menuIcon
@@ -120,6 +125,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         drawerLayout = findViewById(R.id.drawerLayout);
         menuIcon = findViewById(R.id.menuIcon);
+        account = findViewById(R.id.account);
+        iconBell = findViewById(R.id.iconBell);
         navigationView = findViewById(R.id.navigationView);
 
         txtUserPoints = findViewById(R.id.txtUserPoints);

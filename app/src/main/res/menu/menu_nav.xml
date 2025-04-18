@@ -4,7 +4,7 @@
         <item
             android:id="@+id/nav_home"
             android:title="@string/home_nav"
-            android:icon="@drawable/history"/>
+            android:icon="@drawable/ic_home"/>
         <item
             android:id="@+id/nav_his"
             android:title="@string/his_nav"
@@ -12,10 +12,10 @@
         <item
             android:id="@+id/nav_feedback"
             android:title="@string/feedback_nav"
-            android:icon="@drawable/history"/>
+            android:icon="@drawable/ic_feedback"/>
         <item
             android:id="@+id/nav_logout"
             android:title="@string/logout_nav"
-            android:icon="@drawable/history"/>
+            android:icon="@drawable/ic_logout"/>
     </group>
 </menu>

@@ -50,8 +50,8 @@
                         <!-- Nút mở Navigation Drawer -->
                         <ImageView
                             android:id="@+id/menuIcon"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:layout_marginRight="10dp"
                             android:clickable="true"
                             android:contentDescription="Menu"
@@ -76,20 +76,22 @@
                             android:text="Điểm: 0"
                             android:textSize="16sp"
                             android:textColor="#4CAF50"
-                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
                             android:textStyle="bold"/>
 
                         <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:id="@+id/iconBell"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:src="@drawable/bell"
                             android:contentDescription="Thông báo"
                             app:tint="#4CAF50" />
 
                         <ImageView
+                            android:id="@+id/account"
                             android:layout_marginLeft="10dp"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:src="@drawable/account"
                             android:contentDescription="Tài khoản"
                             app:tint="#4CAF50" />

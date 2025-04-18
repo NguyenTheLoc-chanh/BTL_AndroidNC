@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.btl_androidnc.Gift.GiftsActivity;
 import com.example.btl_androidnc.History.HistoryActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,7 +32,7 @@ public class ProfileActivity extends AppCompatActivity {
     RadioButton rbFemale, rbMale;
     private Button btnUpdate;
     ImageView imgNextLeft;
-    private TextView navLichSu;
+    private TextView navLichSu, navDoiQua;
     private ImageView navHome;
 
     @Override
@@ -48,6 +49,7 @@ public class ProfileActivity extends AppCompatActivity {
         // Đặt sự kiện chung cho các mục
         setNavClickListener(navLichSu, HistoryActivity.class,"HISTORY");
         setNavHomeClickListener(navHome, HomeActivity.class);
+        setNavClickListener(navDoiQua, GiftsActivity.class, "GIFTS");
 
         imgNextLeft.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,6 +76,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         navLichSu = findViewById(R.id.nav_lichsu);
         navHome = findViewById(R.id.nav_logo);
+        navDoiQua = findViewById(R.id.nav_doiqua);
     }
     private void setNavClickListener(TextView textView, Class<?> destinationActivity, String tag) {
         textView.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +94,7 @@ public class ProfileActivity extends AppCompatActivity {
     // Reset trạng thái selected của tất cả nav items
     private void resetAllNavItems() {
 //        navTichDiem.setSelected(false);
-//        navDoiQua.setSelected(false);
+        navDoiQua.setSelected(false);
         navLichSu.setSelected(false);
     }
     @Override
@@ -108,8 +111,8 @@ public class ProfileActivity extends AppCompatActivity {
                 case "HISTORY":
                     navLichSu.setSelected(true);
                     break;
-//                case "GIFTS":
-//                    navDoiQua.setSelected(true);
+                case "GIFTS":
+                    navDoiQua.setSelected(true);
 //                case "EARN_POINTS":
 //                    navTichDiem.setSelected(true);
 
