@@ -46,6 +46,11 @@ public class BookingCompletedFragment extends Fragment {
         loadBookings("Hoàn thành");
         return view;
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadBookings("Hoàn thành");
+    }
 
     private void loadBookings(String status) {
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();

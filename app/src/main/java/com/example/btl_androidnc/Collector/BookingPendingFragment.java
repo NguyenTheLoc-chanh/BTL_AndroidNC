@@ -45,6 +45,11 @@ public class BookingPendingFragment extends Fragment {
         loadBookings("Chờ xác nhận");
         return view;
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadBookings("Chờ xác nhận");
+    }
 
     private void loadBookings(String status) {
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();

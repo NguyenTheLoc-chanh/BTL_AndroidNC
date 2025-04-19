@@ -1,6 +1,11 @@
 package com.example.btl_androidnc.Collector;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager2.widget.ViewPager2;
@@ -26,6 +32,7 @@ import com.example.btl_androidnc.VPAdapterBanner;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator;
 
@@ -110,6 +117,7 @@ public class CollectorHomeActivity extends AppCompatActivity implements Navigati
         };
 
         handler.postDelayed(runnable, 3000);
+        listenToNotifications();
     }
     private void AnhXa() {
         navTichDiem = findViewById(R.id.nav_tichdiem);
@@ -221,5 +229,87 @@ public class CollectorHomeActivity extends AppCompatActivity implements Navigati
         return false;
     }
 
+    // Lắng nghe hiện thông báo notification
+    private void listenToNotifications() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return;
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = user.getUid();
+
+        // Bước 1: Tìm collectorId từ userId trong collection "collectors"
+        db.collection("collector")
+                .whereEqualTo("userID", userId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        // Lấy documentId đầu tiên (collectorId)
+                        String collectorId = queryDocumentSnapshots.getDocuments().get(0).getId();
+
+                        // Bước 2: Lắng nghe các thông báo dành cho collector
+                        db.collection("notifications")
+                                .whereEqualTo("userId", collectorId)
+                                .whereEqualTo("seen", false)
+                                .addSnapshotListener((snapshots, e) -> {
+                                    if (e != null) {
+                                        Log.w("NOTIFY", "Listen failed.", e);
+                                        return;
+                                    }
+
+                                    if (snapshots != null && !snapshots.isEmpty()) {
+                                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                                            if (dc.getType() == DocumentChange.Type.ADDED) {
+                                                String message = dc.getDocument().getString("message");
+                                                String bookingId = dc.getDocument().getString("bookingId");
+                                                showLocalNotification(message, bookingId);
+
+                                                // Đánh dấu đã xem
+                                                dc.getDocument().getReference().update("seen", true);
+                                            }
+                                        }
+                                    }
+                                });
+                    } else {
+                        Log.d("NOTIFY", "Không tìm thấy collector với userId hiện tại");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("NOTIFY", "Lỗi khi tìm collectorId từ userId", e);
+                });
+    }
+
+    private void showLocalNotification(String message, String bookingId) {
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String channelId = "default_channel_id";
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Thông báo",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            manager.createNotificationChannel(channel);
+        }
+        // Tạo Intent để mở BookingDetailActivity khi click vào thông báo
+        Intent intent = new Intent(this, BookingDetailsCollector.class);
+        intent.putExtra("bookingId", bookingId);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                (int) System.currentTimeMillis(), // unique request code
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.logoapp) // bạn nên có icon trong res/drawable
+                .setContentTitle("Thông báo mới")
+                .setContentText(message)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        manager.notify((int) System.currentTimeMillis(), builder.build());
+    }
 }
 

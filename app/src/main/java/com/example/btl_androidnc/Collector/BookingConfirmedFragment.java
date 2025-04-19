@@ -45,6 +45,11 @@ public class BookingConfirmedFragment extends Fragment {
         loadBookings("Đã xác nhận");
         return view;
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadBookings("Đã xác nhận");
+    }
 
     private void loadBookings(String status) {
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();

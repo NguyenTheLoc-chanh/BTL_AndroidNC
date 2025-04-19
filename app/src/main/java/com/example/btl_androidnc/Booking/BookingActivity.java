@@ -341,21 +341,6 @@ public class BookingActivity extends AppCompatActivity{
         }
     }
 
-//    private Uri saveBitmapToFile(Bitmap bitmap) {
-//        try {
-//            File photoFile = createImageFile();
-//            FileOutputStream fos = new FileOutputStream(photoFile);
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fos);
-//            fos.flush();
-//            fos.close();
-//            return FileProvider.getUriForFile(this,
-//                    getPackageName() + ".fileprovider",
-//                    photoFile);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
     private void setImageToImageView(Uri imageUri) {
         try {
             // Mở luồng đọc với quyền tạm thời
@@ -684,10 +669,12 @@ public class BookingActivity extends AppCompatActivity{
     private void saveBookingToFirestore(Map<String, Object> booking) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String collectorId = (String) booking.get("collectorId");
 
         db.collection("bookings")
                 .add(booking)
                 .addOnSuccessListener(documentReference -> {
+                    String bookingId = documentReference.getId();
                     DocumentReference userRef = db.collection("users").document(userId);
                     db.runTransaction(transaction -> {
                         DocumentSnapshot snapshot = transaction.get(userRef);
@@ -697,12 +684,38 @@ public class BookingActivity extends AppCompatActivity{
                         return null;
                     }).addOnSuccessListener(aVoid -> {
                         Toast.makeText(this, "Đặt thu gom thành công! Bạn được cộng 5 điểm 🎉", Toast.LENGTH_SHORT).show();
+                        // ✅ Gửi thông báo sau khi cộng điểm
+                        String message = "Bạn có thu gom vào " + selectedDate + " lúc " + selectedTimeSlot + ". Hãy vào để xác nhận đơn hàng!";
+                        sendNotificationToUser(collectorId, message, bookingId);
                         finish();
                     }).addOnFailureListener(e ->{
                         Toast.makeText(this, "Đặt lịch thành công, nhưng lỗi khi cộng điểm: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
                 }).addOnFailureListener(e -> {
                     Toast.makeText(this, "Lỗi khi đặt thu gom: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void sendNotificationToUser(String collectorId, String message, String bookingId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Giả sử bạn có collection "notifications" lưu theo userId
+        Map<String, Object> notification = new HashMap<>();
+        notification.put("message", message);
+        notification.put("timestamp", new Date());
+        notification.put("seen", false);
+        notification.put("userId", collectorId);
+        notification.put("bookingId", bookingId);
+
+        db.collection("notifications")
+                .add(notification)
+                .addOnSuccessListener(docRef -> {
+                    //Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("NOTIFY", "Lỗi khi gửi thông báo", e);
                 });
     }
 }

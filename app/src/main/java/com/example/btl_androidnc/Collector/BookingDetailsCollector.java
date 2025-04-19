@@ -2,11 +2,13 @@ package com.example.btl_androidnc.Collector;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,19 +34,28 @@ public class BookingDetailsCollector extends AppCompatActivity {
         ImageView imgNextLeft = findViewById(R.id.imgNextLeft);
         Button btnConfirm = findViewById(R.id.btnConfirmCol);
         Button btnCancel = findViewById(R.id.btnCancelConfirmCol);
-        imgNextLeft.setOnClickListener(v -> finish());
-
-        String bookingId = getIntent().getStringExtra("booking_id");
-
-        btnConfirm.setOnClickListener(v -> {
-            updateStatusAndNotify(bookingId);
+        imgNextLeft.setOnClickListener(v -> {
+            if (isTaskRoot()) {
+                // Nếu đây là Activity gốc (không có màn trước), mở MainActivity
+                Intent intent = new Intent(BookingDetailsCollector.this, ListBooking.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            } else {
+                // Ngược lại, quay lại màn hình trước như bình thường
+                finish();
+            }
         });
-        btnCancel.setOnClickListener(v -> {
-            updateStatusAndNotifyCancel(bookingId);
-        });
 
-        // Dùng bookingId để truy vấn dữ liệu hiển thị
-        loadBookingDetail(bookingId);
+        String idFromIntent = getIntent().getStringExtra("booking_id");
+        String idFromNotification = getIntent().getStringExtra("bookingId");
+        final String finalBookingId = (idFromNotification != null) ? idFromNotification : idFromIntent;
+
+        btnConfirm.setOnClickListener(v -> updateStatusAndNotify(finalBookingId));
+        btnCancel.setOnClickListener(v -> updateStatusAndNotifyCancel(finalBookingId));
+
+        loadBookingDetail(finalBookingId);
+
     }
     private void loadBookingDetail(String bookingId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -135,6 +146,27 @@ public class BookingDetailsCollector extends AppCompatActivity {
                             itemView.setPadding(8, 8, 8, 8);
                             layoutScrapItems.addView(itemView);
                         }
+                        // ==== GÁN SỰ KIỆN THEO TRẠNG THÁI ====
+                        Button btnConfirm = findViewById(R.id.btnConfirmCol);
+                        Button btnCancel = findViewById(R.id.btnCancelConfirmCol);
+                        LinearLayout layoutButtons = findViewById(R.id.layoutButtons);
+                        layoutButtons.setVisibility(View.VISIBLE);
+
+                        if ("Chờ xác nhận".equalsIgnoreCase(status)) {
+                            btnConfirm.setText("Xác nhận");
+                            btnCancel.setText("Hủy xác nhận");
+
+                            btnConfirm.setOnClickListener(v -> updateStatusAndNotify(bookingId));
+                            btnCancel.setOnClickListener(v -> updateStatusAndNotifyCancel(bookingId));
+                        } else if ("Đã xác nhận".equalsIgnoreCase(status)) {
+                            btnConfirm.setText("Hoàn thành");
+                            btnCancel.setText("Hủy đơn");
+
+                            btnConfirm.setOnClickListener(v -> markAsCompleted(bookingId));
+                            btnCancel.setOnClickListener(v -> updateStatusAndNotifyCancel(bookingId));
+                        } else {
+                            layoutButtons.setVisibility(View.GONE);
+                        }
                     } else {
                         Log.w("FIREBASE", "Không tìm thấy thông tin booking.");
                     }
@@ -178,7 +210,7 @@ public class BookingDetailsCollector extends AppCompatActivity {
                                 if (doc.exists()) {
                                     String userId = doc.getString("userId");
                                     if (userId != null) {
-                                        sendNotificationToUser(userId, "Đơn thu gom của bạn đã được xác nhận!");
+                                        sendNotificationToUser(userId, "Đơn thu gom của bạn đã được xác nhận!", bookingId);
                                     }
                                 }
                             });
@@ -199,7 +231,28 @@ public class BookingDetailsCollector extends AppCompatActivity {
                                 if (doc.exists()) {
                                     String userId = doc.getString("userId");
                                     if (userId != null) {
-                                        sendNotificationToUser(userId, "Đơn hàng của bạn đã bị hủy.");
+                                        sendNotificationToUser(userId, "Đơn hàng của bạn đã bị hủy.", bookingId);
+                                    }
+                                }
+                            });
+
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FIREBASE", "Lỗi khi hủy xác nhận", e);
+                });
+    }
+    private void markAsCompleted(String bookingId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("bookings").document(bookingId)
+                .update("status", "Hoàn thành")
+                .addOnSuccessListener(unused -> {
+                    db.collection("bookings").document(bookingId).get()
+                            .addOnSuccessListener(doc -> {
+                                if (doc.exists()) {
+                                    String userId = doc.getString("userId");
+                                    if (userId != null) {
+                                        sendNotificationToUser(userId, "Đơn thu gom của bạn đã hoàn thành. Cảm ơn bạn đã sử dụng dịch vụ!", bookingId);
                                     }
                                 }
                             });
@@ -210,7 +263,7 @@ public class BookingDetailsCollector extends AppCompatActivity {
                 });
     }
 
-    private void sendNotificationToUser(String userId, String message) {
+    private void sendNotificationToUser(String userId, String message, String bookingId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Giả sử bạn có collection "notifications" lưu theo userId
@@ -219,6 +272,7 @@ public class BookingDetailsCollector extends AppCompatActivity {
         notification.put("timestamp", new Date());
         notification.put("seen", false);
         notification.put("userId", userId);
+        notification.put("bookingId", bookingId);
 
         db.collection("notifications")
                 .add(notification)
@@ -231,6 +285,4 @@ public class BookingDetailsCollector extends AppCompatActivity {
                     Log.e("NOTIFY", "Lỗi khi gửi thông báo", e);
                 });
     }
-
-
 }
